@@ -1,3 +1,3 @@
 #! python
 #
-# pyRayTracerChallenge top level module?
+# pyRayTracerChallenge top level module

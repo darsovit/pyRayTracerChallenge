@@ -94,6 +94,18 @@ class Color(Tuple):
     def multiply(self, other):
         return Color(self[0]*other[0], self[1]*other[1], self[2]*other[2])
 
+    def GetPpmVals(self, scale):
+        red   = int(self[0] * scale + 0.5)
+        red   = red if red < scale else scale
+        red   = red if red >= 0 else 0
+        green = int(self[1] * scale + 0.5)
+        green = green if green < scale else scale
+        green = green if green >= 0 else 0
+        blue  = int(self[2] * scale + 0.5)
+        blue  = blue if blue < scale else scale
+        blue  = blue if blue >= 0 else 0
+        return [ red, green, blue ]
+
 
 #def isPoint( aTuple ):
 #    return equality(aTuple[3], 1.0)
