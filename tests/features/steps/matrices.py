@@ -16,7 +16,6 @@ def step_impl(context, x, y, matrixvar):
         vals += [list(map(float,row))]
     print(vals)
     context.result[matrixvar] = Matrix(int(x),int(y),vals)
-    #raise NotImplementedError(u'STEP: Given the following 4x4 matrix M')
     pass
 
 
@@ -26,7 +25,6 @@ def step_impl(context,matrixvar,x,y,expected):
     assert matrixvar in context.result, 'Expected Matrix {} in result'.format(matrixvar)
     result = context.result[matrixvar][int(x),int(y)]
     assert isclose(result, float(expected)), 'Expected val {} not equal to M[{},{}]=={}'.format(float(expected),int(x),int(y),result)
-    #raise NotImplementedError(u'STEP: Then M[0,0] = 1')
 
 
 
