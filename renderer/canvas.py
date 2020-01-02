@@ -17,7 +17,8 @@ class Canvas:
             return Color(0,0,0)
 
     def SetPixel(self, x, y, color):
-        self.pixels[(x,y)] = color
+        if x < self.width and y < self.height:
+            self.pixels[(x,y)] = color
 
     def Width(self):
         return self.width
