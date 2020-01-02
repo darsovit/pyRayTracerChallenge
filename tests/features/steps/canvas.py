@@ -69,7 +69,7 @@ def step_impl(context, ppmvar, canvasvar):
 def step_impl(context, start, end, ppmvar):
     print(u'STEP: Then lines {}-{} of {} are'.format(start,end,ppmvar))
     assert ppmvar in context.result, 'Expected to find {} in context as ppm data'.format(ppmvar)
-    expectedlines = context.text.split('\n')
+    expectedlines = list(map(str.rstrip, context.text.split('\n')))
     resultlines   = context.result[ppmvar].split('\n')
     assert len(resultlines) >= int(end), 'Expected to find at least {} lines in PPM {}, but it only had {}'.format(end, ppmvar, len(resultlines))
     for i in range(int(end) - int(start) + 1):
