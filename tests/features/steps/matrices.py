@@ -228,15 +228,17 @@ def step_impl(context, matrixvar):
 
 
 
-@then(u'submatrix(A, 0, 2) is the following 2x2 matrix')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then submatrix(A, 0, 2) is the following 2x2 matrix')
+@then(u'submatrix({matrixvar:w}, {row:d}, {column:d}) is the following {rows:d}x{columns:d} matrix')
+def step_impl(context, matrixvar, row, column, rows, columns):
+    print(u'STEP: Then submatrix({}, {}, {}) is the following {}x{} matrix'.format(matrixvar, row, column, rows, columns))
+    assert matrixvar in context.result, 'Expected Matrix {} to be available in context'.format(matrixvar)
+    result = context.result[matrixvar].Submatrix(row,column)
+    expected = buildMatrixFromContextTable(context, rows, columns)
+    assert expected == result, 'Expected submatrix({}, {}, {}) to be equal to provided matrix'.format(matrixvar, row, column)
+    #raise NotImplementedError(u'STEP: Then submatrix(A, 0, 2) is the following 2x2 matrix')
 
 
 
-@then(u'submatrix(A, 2, 1) is the following 3x3 matrix')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then submatrix(A, 2, 1) is the following 3x3 matrix')
 
 
 @given(u'B ← submatrix(A, 1, 0)')

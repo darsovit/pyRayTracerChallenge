@@ -78,4 +78,17 @@ class Matrix:
         assert len(self.data[0]) == 2, 'Only support for 2x2 matrix available'
         return self[0,0]*self[1,1] - self[1,0]*self[0,1]
 
+    def Submatrix(self, row, column):
+        newMatrixData = []
+        for i in range(len(self.data)):
+            if row == i:
+                continue
+            rowData = []
+            for j in range(len(self.data[i])):
+                if column == j:
+                    continue
+                rowData += [ self[i,j] ]
+            newMatrixData += [ rowData ]
+        return Matrix(len(newMatrixData),len(newMatrixData[0]),newMatrixData)
+
 IdentityMatrix = Matrix(4,4,[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
