@@ -105,61 +105,24 @@ def step_impl(context, matrixvar, val):
     #raise NotImplementedError(u'STEP: Then determinant(A) = 17')
 
 
-@then(u'minor(A, 1, 0) = 25')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then minor(A, 1, 0) = 25')
-
-
-@then(u'minor(A, 0, 0) = -12')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then minor(A, 0, 0) = -12')
-
-
-@then(u'cofactor(A, 0, 0) = -12')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 0, 0) = -12')
-
-
-@then(u'cofactor(A, 1, 0) = -25')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 1, 0) = -25')
-
-
-@then(u'cofactor(A, 0, 0) = 56')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 0, 0) = 56')
-
-
-@then(u'cofactor(A, 0, 1) = 12')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 0, 1) = 12')
-
-
-@then(u'cofactor(A, 0, 2) = -46')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 0, 2) = -46')
+@then(u'minor({matrixvar:w}, {row:d}, {column:d}) = {val:g}')
+def step_impl(context,matrixvar,row,column,val):
+    print(u'STEP: Then minor({}, {}, {}) = {}'.format(matrixvar,row,column,val))
+    assert matrixvar in context.result, 'Expected Matrix {} to be available in context'.format(matrixvar)
+    result = context.result[matrixvar].Minor(row, column)
+    assert val == result, 'Expected Minor({}, {}, {}) = {}, found it equal to {}'.format(matrixvar, row, column, val, result)
 
 
 
 
-@then(u'cofactor(A, 0, 0) = 690')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 0, 0) = 690')
+@then(u'cofactor({matrixvar:w}, {row:d}, {column:d}) = {val:g}')
+def step_impl(context,matrixvar,row,column,val):
+    print(u'STEP: Then cofactor({}, {}, {}) = {}'.format(matrixvar,row,column,val))
+    assert matrixvar in context.result, 'Expected Matrix {} to be available in context'.format(matrixvar)
+    result = context.result[matrixvar].Cofactor(row, column)
+    assert val == result, 'Expected Cofactor({}, {}, {}) = {}, found it equal to {}'.format(matrixvar, row, column, val, result)
+    #raise NotImplementedError(u'STEP: Then cofactor(A, 0, 0) = -12')
 
-
-@then(u'cofactor(A, 0, 1) = 447')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 0, 1) = 447')
-
-
-@then(u'cofactor(A, 0, 2) = 210')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 0, 2) = 210')
-
-
-@then(u'cofactor(A, 0, 3) = 51')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 0, 3) = 51')
 
 
 
@@ -170,17 +133,7 @@ def step_impl(context):
 @then(u'C * inverse(B) = A')
 def step_impl(context):
     raise NotImplementedError(u'STEP: Then C * inverse(B) = A')
-    
-@then(u'cofactor(A, 3, 2) = 105')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 3, 2) = 105')
 
-
-
-
-@then(u'cofactor(A, 2, 3) = -160')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then cofactor(A, 2, 3) = -160')
 
 
 
@@ -213,7 +166,6 @@ def step_impl(context,matrixvar):
     expected = buildMatrixFromContextTable(context)
     resultMatrix = context.result[matrixvar].Transpose()
     assert expected == resultMatrix, 'Expected transpose({}) to be equal to provided matrix'.format(matrixvar)
-    #raise NotImplementedError(u'STEP: Then transpose(A) is the following matrix')
 
 
 @given(u'{matrixvar:w} ← transpose(identity_matrix)')
@@ -223,9 +175,6 @@ def step_impl(context, matrixvar):
         context.result = {}
     context.result[matrixvar] = IdentityMatrix.Transpose()
     pass
-    #raise NotImplementedError(u'STEP: Given A ← transpose(identity_matrix)')
-
-
 
 
 @then(u'submatrix({matrixvar:w}, {row:d}, {column:d}) is the following {rows:d}x{columns:d} matrix')
@@ -235,15 +184,14 @@ def step_impl(context, matrixvar, row, column, rows, columns):
     result = context.result[matrixvar].Submatrix(row,column)
     expected = buildMatrixFromContextTable(context, rows, columns)
     assert expected == result, 'Expected submatrix({}, {}, {}) to be equal to provided matrix'.format(matrixvar, row, column)
-    #raise NotImplementedError(u'STEP: Then submatrix(A, 0, 2) is the following 2x2 matrix')
 
 
-
-
-
-@given(u'B ← submatrix(A, 1, 0)')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Given B ← submatrix(A, 1, 0)')
+@given(u'{destmatrix:w} ← submatrix({sourcematrix:w}, {row:d}, {column:d})')
+def step_impl(context,destmatrix,sourcematrix,row,column):
+    print(u'STEP: Given {} ← submatrix({}, {}, {})'.format(destmatrix,sourcematrix,row,column))
+    assert sourcematrix in context.result, 'Expected Matrix {} to be available in context'.format(sourcematrix)
+    context.result[destmatrix] = context.result[sourcematrix].Submatrix(row,column)
+    pass
 
 
 

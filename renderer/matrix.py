@@ -74,9 +74,13 @@ class Matrix:
         return Matrix(cols, rows, newMatrixData)
         
     def Determinant(self):
-        assert len(self.data) == 2, 'Only support for 2x2 matrix available'
-        assert len(self.data[0]) == 2, 'Only support for 2x2 matrix available'
-        return self[0,0]*self[1,1] - self[1,0]*self[0,1]
+        det = 0
+        if len(self.data) == 2 and len(self.data[0]) == 2:
+            det = self[0,0]*self[1,1] - self[1,0]*self[0,1]
+        else:
+            for i in range(len(self.data)):
+                det += self[0,i] * self.Cofactor(0,i)
+        return det
 
     def Submatrix(self, row, column):
         newMatrixData = []
@@ -90,5 +94,13 @@ class Matrix:
                 rowData += [ self[i,j] ]
             newMatrixData += [ rowData ]
         return Matrix(len(newMatrixData),len(newMatrixData[0]),newMatrixData)
+        
+    def Minor(self, row, column):
+        return self.Submatrix(row,column).Determinant()
+
+    def Cofactor(self, row, column):
+        determinant = self.Submatrix(row,column).Determinant()
+        negate = -1 if (row + column) % 2 == 1 else 1
+        return determinant * negate
 
 IdentityMatrix = Matrix(4,4,[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
