@@ -4,30 +4,31 @@
 #
 from behave import given, then
 from renderer.matrix import Matrix
+from renderer.bolts  import Tuple
 from math import isclose
 
-@given(u'the following {x}x{y} matrix {matrixvar}')
-def step_impl(context, x, y, matrixvar):
-    print(u'STEP: Given the following 4x4 matrix M'.format(x,y,matrixvar))
+@given(u'the following {rows:d}x{cols:d} matrix {matrixvar:w}')
+def step_impl(context, rows, cols, matrixvar):
+    print(u'STEP: Given the following {}x{} matrix {}'.format(rows,cols,matrixvar))
     if 'result' not in context:
         context.result = {}
     vals = [list(map(float,context.table.headings))]
     for row in context.table:
         vals += [list(map(float,row))]
     print(vals)
-    context.result[matrixvar] = Matrix(int(x),int(y),vals)
+    context.result[matrixvar] = Matrix(rows,cols,vals)
     pass
 
 
-@then(u'{matrixvar}[{x},{y}] = {expected}')
-def step_impl(context,matrixvar,x,y,expected):
-    print(u'STEP: Then {}[{},{}] = {}'.format(matrixvar,x,y,expected))
+@then(u'{matrixvar:w}[{row:d},{col:d}] = {expected:g}')
+def step_impl(context,matrixvar,row,col,expected):
+    print(u'STEP: Then {}[{},{}] = {}'.format(matrixvar,row,col,expected))
     assert matrixvar in context.result, 'Expected Matrix {} in result'.format(matrixvar)
-    result = context.result[matrixvar][int(x),int(y)]
-    assert isclose(result, float(expected)), 'Expected val {} not equal to M[{},{}]=={}'.format(float(expected),int(x),int(y),result)
+    result = context.result[matrixvar][row,col]
+    assert isclose(result, expected), 'Expected val {} not equal to M[{},{}]=={}'.format(expected,row,col,result)
 
 
-@given(u'the following matrix {matrixvar}')
+@given(u'the following matrix {matrixvar:w}')
 def step_impl(context,matrixvar):
     print(u'STEP: Given the following matrix {}'.format(matrixvar))
     if 'result' not in context:
@@ -183,11 +184,28 @@ def step_impl(context):
 
 
 
-@then(u'A * B is the following 4x4 matrix')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then A * B is the following 4x4 matrix')
+@then(u'{matrix1:w} * {matrix2:w} is the following {rows:d}x{cols:d} matrix')
+def step_impl(context,matrix1,matrix2,rows,cols):
+    print(u'STEP: Then {} * {} is the following {}x{} matrix'.format(matrix1,matrix2,rows,cols))
+    assert matrix1 in context.result, 'Expected {} to be available in context'.format(matrix1)
+    assert matrix2 in context.result, 'Expected {} to be available in context'.format(matrix2)
+    vals = [list(map(float,context.table.headings))]
+    for row in context.table:
+        vals += [list(map(float,row))]
+    expectedResult = Matrix(rows,cols,vals)
+    resultMatrix = context.result[matrix1] * context.result[matrix2]
+    assert expectedResult == resultMatrix, 'Expected matrix result equals result matrix'
 
 
+@then(u'A * {tuplevar:w} = tuple({x:g}, {y:g}, {z:g}, {w:g})')
+def step_impl(context,tuplevar,x,y,z,w):
+    matrixvar = 'A'
+    print(u'STEP: Then {} * {} = tuple({}, {}, {}, {})'.format(matrixvar,tuplevar,x,y,z,w))
+    assert matrixvar in context.result, 'Expected matrix {} to be available in context'.format(matrixvar)
+    assert tuplevar  in context.result, 'Expected tuple {} to be available in context'.format(tuplevar)
+    expected = Tuple(x,y,z,w)
+    result = context.result[matrixvar].TimesTuple(context.result[tuplevar])
+    assert expected == result, 'Expected {} == {}'.format(expected, result)
 
 
 @then(u'transpose(A) is the following matrix')
@@ -261,4 +279,3 @@ def step_impl(context):
 @given(u'C ← A * B')
 def step_impl(context):
     raise NotImplementedError(u'STEP: Given C ← A * B')
-

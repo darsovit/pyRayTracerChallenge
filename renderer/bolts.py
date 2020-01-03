@@ -59,7 +59,6 @@ class Tuple:
         return '{}'.format(self.val)
 
     def dot(self, other):
-        assert(self.isVector() and other.isVector())
         return self[0] * other[0] + self[1]*other[1] + self[2]*other[2] + self[3]*other[3]
 
 
