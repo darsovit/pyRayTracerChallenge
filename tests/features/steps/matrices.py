@@ -25,7 +25,6 @@ def step_impl(context, rows, cols, matrixvar):
     print(u'STEP: Given the following {}x{} matrix {}'.format(rows,cols,matrixvar))
     if 'result' not in context:
         context.result = {}
-    #print(vals)
     context.result[matrixvar] = buildMatrixFromContextTable(context,rows,cols)
     pass
 
@@ -93,7 +92,6 @@ def step_impl(context, matrixvar):
     print(u'STEP: Then {} = identity_matrix'.format(matrixvar))
     assert matrixvar in context.result, 'Expected Matrix {} to be available in context'.format(matrixvar)
     assert context.result[matrixvar] == IdentityMatrix, 'Expected Matrix {} to be equal to the identity_matrix'.format(matrixvar)
-    #raise NotImplementedError(u'STEP: Then A = identity_matrix')
 
 
 @then(u'determinant({matrixvar:w}) = {val:g}')
@@ -102,7 +100,6 @@ def step_impl(context, matrixvar, val):
     assert matrixvar in context.result, 'Expected Matrix {} to be available in context'.format(matrixvar)
     result = context.result[matrixvar].Determinant()
     assert val == result, 'Expected Determinant({}) = {}, found it equal to {}'.format(matrixvar, val, result)
-    #raise NotImplementedError(u'STEP: Then determinant(A) = 17')
 
 
 @then(u'minor({matrixvar:w}, {row:d}, {column:d}) = {val:g}')
@@ -113,28 +110,12 @@ def step_impl(context,matrixvar,row,column,val):
     assert val == result, 'Expected Minor({}, {}, {}) = {}, found it equal to {}'.format(matrixvar, row, column, val, result)
 
 
-
-
 @then(u'cofactor({matrixvar:w}, {row:d}, {column:d}) = {val:g}')
 def step_impl(context,matrixvar,row,column,val):
     print(u'STEP: Then cofactor({}, {}, {}) = {}'.format(matrixvar,row,column,val))
     assert matrixvar in context.result, 'Expected Matrix {} to be available in context'.format(matrixvar)
     result = context.result[matrixvar].Cofactor(row, column)
     assert val == result, 'Expected Cofactor({}, {}, {}) = {}, found it equal to {}'.format(matrixvar, row, column, val, result)
-    #raise NotImplementedError(u'STEP: Then cofactor(A, 0, 0) = -12')
-
-
-
-
-
-
-
-
-@then(u'C * inverse(B) = A')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then C * inverse(B) = A')
-
-
 
 
 
@@ -194,46 +175,67 @@ def step_impl(context,destmatrix,sourcematrix,row,column):
     pass
 
 
-
-@then(u'A is invertible')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then A is invertible')
-
-@then(u'A is not invertible')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then A is not invertible')
+@then(u'{matrixvar:w} is invertible')
+def step_impl(context, matrixvar):
+    print(u'STEP: Then {} is invertible'.format(matrixvar))
+    assert matrixvar in context.result
+    assert context.result[matrixvar].IsInvertible(), 'Expected Matrix {} to be invertible, but it is not'.format(matrixvar)
 
 
-@given(u'B ← inverse(A)')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Given B ← inverse(A)')
+@then(u'{matrixvar:w} is not invertible')
+def step_impl(context,matrixvar):
+    print(u'STEP: Then {} is not invertible'.format(matrixvar))
+    assert matrixvar in context.result
+    assert not context.result[matrixvar].IsInvertible(), 'Expected Matrix {} is not invertible, but it is'.format(matrixvar)
 
 
-#@then(u'B[3,2] = -160/532')
-#def step_impl(context):
-#    raise NotImplementedError(u'STEP: Then B[3,2] = -160/532')
+@given(u'{destmatrix:w} ← inverse({sourcematrix:w})')
+def step_impl(context, destmatrix, sourcematrix):
+    print(u'STEP: Given B ← inverse(A)'.format(destmatrix,sourcematrix))
+    assert sourcematrix in context.result
+    context.result[destmatrix] = context.result[sourcematrix].Inverse()
+    pass
 
 
-#@then(u'B[2,3] = 105/532')
-#def step_impl(context):
-#    raise NotImplementedError(u'STEP: Then B[2,3] = 105/532')
+@then(u'{matrixvar:w}[{row:d},{col:d}] = {numerator:g}/{denominator:g}')
+def step_impl(context,matrixvar,row,col,numerator,denominator):
+    print(u'STEP: Then {}[{},{}] = {}/{}'.format(matrixvar,row,col,numerator,denominator))
+    assert matrixvar in context.result
+    expected = numerator / denominator
+    result   = context.result[matrixvar][row,col]
+    assert isclose(expected,result), 'Expected {} to be value at {}[{},{}], but found {}'.format(expected, matrixvar, row, col, result)
 
 
-@then(u'B is the following 4x4 matrix')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then B is the following 4x4 matrix')
+@then(u'{matrixvar:w} is the following {rows:d}x{columns:d} matrix')
+def step_impl(context, matrixvar, rows, columns):
+    print(u'STEP: Then {} is the following {}x{} matrix'.format(matrixvar, rows, columns))
+    assert matrixvar in context.result
+    expected = buildMatrixFromContextTable(context, rows, columns)
+    assert context.result[matrixvar].Compare(expected), 'Expected {} to be equal to the provided matrix'.format(matrixvar)
 
 
-@then(u'inverse(A) is the following 4x4 matrix')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then inverse(A) is the following 4x4 matrix')
-
-
-#@given(u'the following 4x4 matrix B')
-#def step_impl(context):
-#    raise NotImplementedError(u'STEP: Given the following 4x4 matrix B')
+@then(u'inverse({matrixvar:w}) is the following {rows:d}x{columns:d} matrix')
+def step_impl(context, matrixvar, rows, columns):
+    print(u'STEP: Then inverse(A) is the following 4x4 matrix'.format(matrixvar, rows, columns))
+    assert matrixvar in context.result
+    expected = buildMatrixFromContextTable(context, rows, columns)
+    assert context.result[matrixvar].Inverse().Compare(expected), 'Expected inverse({}) to be equal to the provided matrix'.format(matrixvar)
 
 
 @given(u'C ← A * B')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Given C ← A * B')
+    print(u'STEP: Given C ← A * B')
+    assert 'B' in context.result
+    assert 'A' in context.result
+    context.result['C'] = context.result['A'] * context.result['B']
+    pass
+
+
+@then(u'{matrix1:w} * inverse({matrix2:w}) = {matrix3:w}')
+def step_impl(context, matrix1, matrix2, matrix3):
+    print(u'STEP: Then {} * inverse({}) = {}'.format(matrix1,matrix2,matrix3))
+    assert matrix1 in context.result
+    assert matrix2 in context.result
+    assert matrix3 in context.result
+    result = context.result[matrix1] * context.result[matrix2].Inverse()
+    assert result.Compare(context.result[matrix3]), 'Expected {} * inverse({}) = {}, but it does not'.format(matrix1, matrix2, matrix3)

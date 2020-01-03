@@ -11,10 +11,23 @@ class Matrix:
         assert len(self.data) == rows, 'Expected num rows {} not equal to num rows {}'.format(rows,len(self.data))
         for i in range(len(self.data)):
             assert len(self.data[i]) == cols, 'Expected size of cols {} is not equal to size of cols {}'.format(cols,len(self.data[0]))
-    
+
     def __getitem__(self,pos):
         return self.data[pos[0]][pos[1]]
-        
+
+    def Compare(self, rhs):
+        EPSILON = 0.00001
+        if len(rhs.data) != len(self.data):
+            return False
+        for i in range(len(self.data)):
+            if len(self.data[i]) != len(rhs.data[i]):
+                return False
+            for j in range(len(self.data[i])):
+                if not isclose(self.data[i][j], rhs.data[i][j], abs_tol=EPSILON):
+                    return False
+        return True
+
+
     def __eq__(self,rhs):
         if len(rhs.data) != len(self.data):
             return False
@@ -102,5 +115,25 @@ class Matrix:
         determinant = self.Submatrix(row,column).Determinant()
         negate = -1 if (row + column) % 2 == 1 else 1
         return determinant * negate
+
+    def IsInvertible(self):
+        return self.Determinant() != 0
+
+    def Inverse(self):
+        determinant = self.Determinant()
+        if 0 == determinant:
+            raise NotInvertibleError
+        newMatrixData = []
+        rows = len(self.data)
+        assert rows > 0
+        cols = len(self.data[0])
+        assert cols > 0
+        for j in range(cols):
+            newMatrixData += [[]]
+        for i in range(rows):
+            for j in range(cols):
+                cofactor = self.Cofactor(i,j)
+                newMatrixData[j] += [ cofactor / determinant ]
+        return Matrix(cols,rows,newMatrixData)
 
 IdentityMatrix = Matrix(4,4,[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
