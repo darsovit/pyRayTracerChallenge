@@ -59,3 +59,6 @@ class Matrix:
         if len(resultTupleData) > 0:
             x = resultTupleData[0]
         return Tuple( x, y, z, w )
+        
+        
+IdentityMatrix = Matrix(4,4,[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])

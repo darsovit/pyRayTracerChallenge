@@ -3,7 +3,7 @@
 # Steps for matrix tests
 #
 from behave import given, then
-from renderer.matrix import Matrix
+from renderer.matrix import Matrix, IdentityMatrix
 from renderer.bolts  import Tuple
 from math import isclose
 
@@ -67,11 +67,19 @@ def step_impl(context):
 
 @then(u'A * identity_matrix = A')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then A * identity_matrix = A')
+    print(u'STEP: Then A * identity_matrix = A')
+    matrixvar = 'A'
+    assert matrixvar in context.result, 'Expected Matrix {} to be in context'.format(matrixvar)
+    result = context.result[matrixvar] * IdentityMatrix
+    assert context.result[matrixvar] == result, 'Expect multiplying {} by the identity_matrix matches {}'.format(matrixvar,matrixvar)
 
 @then(u'identity_matrix * a = a')
 def step_impl(context):
-    raise NotImplementedError(u'STEP: Then identity_matrix * a = a')
+    print(u'STEP: Then identity_matrix * a = a')
+    tuplevar = 'a'
+    assert tuplevar in context.result, 'Expected Tuple {} to be in context'.format(tuplevar)
+    result = IdentityMatrix.TimesTuple(context.result[tuplevar])
+    assert context.result[tuplevar] == result, 'Expect multiplying the identity_matrix by tuple {} matches {}'.format(tuplevar, tuplevar)
 
 @then(u'A = identity_matrix')
 def step_impl(context):

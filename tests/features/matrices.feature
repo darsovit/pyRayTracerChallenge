@@ -84,17 +84,17 @@ Scenario: A matrix multiplied by a tuple
     And b ← tuple(1, 2, 3, 1)
   Then A * b = tuple(18, 24, 33, 1)
 
-#Scenario: Multiplying a matrix by the identity matrix
-#  Given the following matrix A:
-#    | 0 | 1 |  2 |  4 |
-#    | 1 | 2 |  4 |  8 |
-#    | 2 | 4 |  8 | 16 |
-#    | 4 | 8 | 16 | 32 |
-#  Then A * identity_matrix = A
+Scenario: Multiplying a matrix by the identity matrix
+  Given the following matrix A:
+    | 0 | 1 |  2 |  4 |
+    | 1 | 2 |  4 |  8 |
+    | 2 | 4 |  8 | 16 |
+    | 4 | 8 | 16 | 32 |
+  Then A * identity_matrix = A
 
-#Scenario: Multiplying the identity matrix by a tuple
-#  Given a ← tuple(1, 2, 3, 4)
-#  Then identity_matrix * a = a
+Scenario: Multiplying the identity matrix by a tuple
+  Given a ← tuple(1, 2, 3, 4)
+  Then identity_matrix * a = a
 
 #Scenario: Transposing a matrix
 #  Given the following matrix A:
