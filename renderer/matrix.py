@@ -12,6 +12,9 @@ class Matrix:
         for i in range(len(self.data)):
             assert len(self.data[i]) == cols, 'Expected size of cols {} is not equal to size of cols {}'.format(cols,len(self.data[0]))
 
+    def __str__(self):
+        return '\n'.join(list(map(str, self.data)))
+
     def __getitem__(self,pos):
         return self.data[pos[0]][pos[1]]
 
