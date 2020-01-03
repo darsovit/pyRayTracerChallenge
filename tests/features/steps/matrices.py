@@ -7,16 +7,26 @@ from renderer.matrix import Matrix, IdentityMatrix
 from renderer.bolts  import Tuple
 from math import isclose
 
+def buildMatrixFromContextTable(context,rows=None,cols=None):
+    vals = [list(map(float,context.table.headings))]
+    for row in context.table:
+        vals += [list(map(float,row))]
+    if rows is None:
+        rows = len(vals)
+    if cols is None:
+        cols = len(vals[0])
+    assert rows == len(vals)
+    for row in vals:
+        assert cols == len(row)
+    return Matrix(rows,cols,vals)
+
 @given(u'the following {rows:d}x{cols:d} matrix {matrixvar:w}')
 def step_impl(context, rows, cols, matrixvar):
     print(u'STEP: Given the following {}x{} matrix {}'.format(rows,cols,matrixvar))
     if 'result' not in context:
         context.result = {}
-    vals = [list(map(float,context.table.headings))]
-    for row in context.table:
-        vals += [list(map(float,row))]
-    print(vals)
-    context.result[matrixvar] = Matrix(rows,cols,vals)
+    #print(vals)
+    context.result[matrixvar] = buildMatrixFromContextTable(context,rows,cols)
     pass
 
 
@@ -33,10 +43,7 @@ def step_impl(context,matrixvar):
     print(u'STEP: Given the following matrix {}'.format(matrixvar))
     if 'result' not in context:
         context.result = {}
-    vals = [list(map(float,context.table.headings))]
-    for row in context.table:
-        vals += [list(map(float,row))]
-    context.result[matrixvar] = Matrix(len(vals),len(vals[0]),vals)
+    context.result[matrixvar] = buildMatrixFromContextTable(context)
     pass
 
 
@@ -81,14 +88,21 @@ def step_impl(context):
     result = IdentityMatrix.TimesTuple(context.result[tuplevar])
     assert context.result[tuplevar] == result, 'Expect multiplying the identity_matrix by tuple {} matches {}'.format(tuplevar, tuplevar)
 
-@then(u'A = identity_matrix')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then A = identity_matrix')
+@then(u'{matrixvar:w} = identity_matrix')
+def step_impl(context, matrixvar):
+    print(u'STEP: Then {} = identity_matrix'.format(matrixvar))
+    assert matrixvar in context.result, 'Expected Matrix {} to be available in context'.format(matrixvar)
+    assert context.result[matrixvar] == IdentityMatrix, 'Expected Matrix {} to be equal to the identity_matrix'.format(matrixvar)
+    #raise NotImplementedError(u'STEP: Then A = identity_matrix')
 
 
-@then(u'determinant(A) = 17')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then determinant(A) = 17')
+@then(u'determinant({matrixvar:w}) = {val:g}')
+def step_impl(context, matrixvar, val):
+    print(u'STEP: Then determinant({}) = {}'.format(matrixvar,val))
+    assert matrixvar in context.result, 'Expected Matrix {} to be available in context'.format(matrixvar)
+    result = context.result[matrixvar].Determinant()
+    assert val == result, 'Expected Determinant({}) = {}, found it equal to {}'.format(matrixvar, val, result)
+    #raise NotImplementedError(u'STEP: Then determinant(A) = 17')
 
 
 @then(u'minor(A, 1, 0) = 25')
@@ -126,9 +140,6 @@ def step_impl(context):
     raise NotImplementedError(u'STEP: Then cofactor(A, 0, 2) = -46')
 
 
-@then(u'determinant(A) = -196')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then determinant(A) = -196')
 
 
 @then(u'cofactor(A, 0, 0) = 690')
@@ -151,23 +162,8 @@ def step_impl(context):
     raise NotImplementedError(u'STEP: Then cofactor(A, 0, 3) = 51')
 
 
-@then(u'determinant(A) = -4071')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then determinant(A) = -4071')
 
 
-@then(u'determinant(A) = -2120')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then determinant(A) = -2120')
-
-@then(u'determinant(B) = 25')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then determinant(B) = 25')
-
-
-@then(u'determinant(A) = 0')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then determinant(A) = 0')
 
 
 
@@ -180,9 +176,6 @@ def step_impl(context):
     raise NotImplementedError(u'STEP: Then cofactor(A, 3, 2) = 105')
 
 
-@then(u'determinant(A) = 532')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then determinant(A) = 532')
 
 
 @then(u'cofactor(A, 2, 3) = -160')
@@ -197,10 +190,7 @@ def step_impl(context,matrix1,matrix2,rows,cols):
     print(u'STEP: Then {} * {} is the following {}x{} matrix'.format(matrix1,matrix2,rows,cols))
     assert matrix1 in context.result, 'Expected {} to be available in context'.format(matrix1)
     assert matrix2 in context.result, 'Expected {} to be available in context'.format(matrix2)
-    vals = [list(map(float,context.table.headings))]
-    for row in context.table:
-        vals += [list(map(float,row))]
-    expectedResult = Matrix(rows,cols,vals)
+    expectedResult = buildMatrixFromContextTable(context,rows,cols)
     resultMatrix = context.result[matrix1] * context.result[matrix2]
     assert expectedResult == resultMatrix, 'Expected matrix result equals result matrix'
 
@@ -216,14 +206,24 @@ def step_impl(context,tuplevar,x,y,z,w):
     assert expected == result, 'Expected {} == {}'.format(expected, result)
 
 
-@then(u'transpose(A) is the following matrix')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then transpose(A) is the following matrix')
+@then(u'transpose({matrixvar:w}) is the following matrix')
+def step_impl(context,matrixvar):
+    print(u'STEP: Then transpose({}) is the following matrix'.format(matrixvar))
+    assert matrixvar in context.result, 'Expected matrix {} to be available in context'.format(matrixvar)
+    expected = buildMatrixFromContextTable(context)
+    resultMatrix = context.result[matrixvar].Transpose()
+    assert expected == resultMatrix, 'Expected transpose({}) to be equal to provided matrix'.format(matrixvar)
+    #raise NotImplementedError(u'STEP: Then transpose(A) is the following matrix')
 
 
-@given(u'A ← transpose(identity_matrix)')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Given A ← transpose(identity_matrix)')
+@given(u'{matrixvar:w} ← transpose(identity_matrix)')
+def step_impl(context, matrixvar):
+    print(u'STEP: Given {} ← transpose(identity_matrix)'.format(matrixvar))
+    if 'result' not in context:
+        context.result = {}
+    context.result[matrixvar] = IdentityMatrix.Transpose()
+    pass
+    #raise NotImplementedError(u'STEP: Given A ← transpose(identity_matrix)')
 
 
 

@@ -59,6 +59,23 @@ class Matrix:
         if len(resultTupleData) > 0:
             x = resultTupleData[0]
         return Tuple( x, y, z, w )
+
+    def Transpose(self):
+        newMatrixData = []
+        rows = len(self.data)
+        assert rows > 0
+        cols = len(self.data[0])
+        assert cols > 0
+        for j in range(cols):
+            newMatrixData += [[]]
+        for i in range(rows):
+            for j in range(cols):
+                newMatrixData[j] += [self[i,j]]
+        return Matrix(cols, rows, newMatrixData)
         
-        
+    def Determinant(self):
+        assert len(self.data) == 2, 'Only support for 2x2 matrix available'
+        assert len(self.data[0]) == 2, 'Only support for 2x2 matrix available'
+        return self[0,0]*self[1,1] - self[1,0]*self[0,1]
+
 IdentityMatrix = Matrix(4,4,[[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
