@@ -3,7 +3,7 @@
 # transformations steps
 
 from behave import given, then
-from renderer.transformations import Translation, Scaling, Rotation_x
+from renderer.transformations import Translation, Scaling, Rotation_x, Rotation_y, Rotation_z
 from renderer.bolts import Point,Vector
 from math import sqrt, pi
 
@@ -56,7 +56,6 @@ def step_impl(context, var, pi_divider):
     if 'result' not in context:
         context.result = {}
     context.result[var] = Rotation_x( pi / pi_divider )
-    #raise NotImplementedError(u'STEP: Given half_quarter ← rotation_x(π / 4)')
 
 @then(u'{transformvar:w} * {pointvar:w} = point(0, √2/2, √2/2)')
 def step_impl(context, transformvar, pointvar):
@@ -66,7 +65,6 @@ def step_impl(context, transformvar, pointvar):
     expected = Point(0, sqrt(2)/2, sqrt(2)/2)
     result = context.result[transformvar].TimesTuple(context.result[pointvar])
     assert expected.compare(result), 'Expected transform {} against point {} would result in {}, but result was {}'.format(transformvar, pointvar, expected, result)
-    #raise NotImplementedError(u'STEP: Then half_quarter * p = point(0, √2/2, √2/2)')
 
 @then(u'{transformvar:w} * {pointvar:w} = point(0, √2/2, -√2/2)')
 def step_impl(context, transformvar, pointvar):
@@ -76,4 +74,35 @@ def step_impl(context, transformvar, pointvar):
     expected = Point(0, sqrt(2)/2, -(sqrt(2)/2))
     result = context.result[transformvar].TimesTuple(context.result[pointvar])
     assert expected.compare(result), 'Expected transform {} against point {} would result in {}, but result was {}'.format(transformvar, pointvar, expected, result)
-    #raise NotImplementedError(u'STEP: Then half_quarter * p = point(0, √2/2, √2/2)')
+
+@given(u'{var:w} ← rotation_y(π / {pi_divider:g})')
+def step_impl(context, var, pi_divider):
+    print(u'STEP: Given {} ← rotation_y(π / {})'.format(var, pi_divider))
+    if 'result' not in context:
+        context.result = {}
+    context.result[var] = Rotation_y( pi / pi_divider )
+
+@then(u'{transformvar:w} * {pointvar:w} = point(√2/2, 0, √2/2)')
+def step_impl(context, transformvar, pointvar):
+    print(u'STEP: Then {} * {} = point(√2/2, 0, √2/2)'.format(transformvar, pointvar))
+    assert transformvar in context.result
+    assert pointvar in context.result
+    expected = Point( sqrt(2)/2, 0, sqrt(2)/2 )
+    result = context.result[transformvar].TimesTuple(context.result[pointvar])
+    assert expected.compare(result), 'Expected transform {} against point {} would result in {}, but result was {}'.format(transformvar, pointvar, expected, result)
+
+@given(u'{var:w} ← rotation_z(π / {pi_divider:g})')
+def step_impl(context, var, pi_divider):
+    print(u'STEP: Given {} ← rotation_z(π / {})'.format(var, pi_divider))
+    if 'result' not in context:
+        context.result = {}
+    context.result[var] = Rotation_z( pi / pi_divider )
+
+@then(u'{transformvar:w} * {pointvar:w} = point(-√2/2, √2/2, 0)')
+def step_impl(context, transformvar, pointvar):
+    print(u'STEP: Then {} * {} = point(-√2/2, √2/2, 0)'.format(transformvar, pointvar))
+    assert transformvar in context.result
+    assert pointvar     in context.result
+    expected = Point( -sqrt(2)/2, sqrt(2)/2, 0 )
+    result = context.result[transformvar].TimesTuple( context.result[pointvar] )
+    assert expected.compare(result), 'Expected transform {} against point {} would result in {}, but result was {}'.format(transformvar, pointvar, expected, result)
