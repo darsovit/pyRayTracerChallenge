@@ -94,28 +94,28 @@ Scenario: A shearing transformation moves z in proportion to y
     And p ← point(2, 3, 4)
   Then transform * p = point(2, 3, 7)
 
-#Scenario: Individual transformations are applied in sequence
-#  Given p ← point(1, 0, 1)
-#    And A ← rotation_x(π / 2)
-#    And B ← scaling(5, 5, 5)
-#    And C ← translation(10, 5, 7)
-#  # apply rotation first
-#  When p2 ← A * p
-#  Then p2 = point(1, -1, 0)
-#  # then apply scaling
-#  When p3 ← B * p2
-#  Then p3 = point(5, -5, 0)
-#  # then apply translation
-#  When p4 ← C * p3
-#  Then p4 = point(15, 0, 7)
+Scenario: Individual transformations are applied in sequence
+  Given p ← point(1, 0, 1)
+    And A ← rotation_x(π / 2)
+    And B ← scaling(5, 5, 5)
+    And C ← translation(10, 5, 7)
+  # apply rotation first
+  When p2 ← A * p
+  Then p2 = point(1, -1, 0)
+  # then apply scaling
+  When p3 ← B * p2
+  Then p3 = point(5, -5, 0)
+  # then apply translation
+  When p4 ← C * p3
+  Then p4 = point(15, 0, 7)
 
-#Scenario: Chained transformations must be applied in reverse order
-#  Given p ← point(1, 0, 1)
-#    And A ← rotation_x(π / 2)
-#    And B ← scaling(5, 5, 5)
-#    And C ← translation(10, 5, 7)
-#  When T ← C * B * A
-#  Then T * p = point(15, 0, 7)
+Scenario: Chained transformations must be applied in reverse order
+  Given p ← point(1, 0, 1)
+    And A ← rotation_x(π / 2)
+    And B ← scaling(5, 5, 5)
+    And C ← translation(10, 5, 7)
+  When T ← C * B * A
+  Then T * p = point(15, 0, 7)
 
 #Scenario: The transformation matrix for the default orientation
 #  Given from ← point(0, 0, 0)

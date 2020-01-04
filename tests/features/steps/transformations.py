@@ -113,3 +113,37 @@ def step_impl(context, var, x_y, x_z, y_x, y_z, z_x, z_y):
     if 'result' not in context:
         context.result = {}
     context.result[var] = Shearing(x_y, x_z, y_x, y_z, z_x, z_y)
+
+def ApplyTransform( context, transformvar, pointvar, resultvar ):
+    print(u'STEP: When {} ← {} * {}'.format( resultvar, transformvar, pointvar ))
+    assert pointvar in context.result
+    assert transformvar in context.result
+    context.result[resultvar] = context.result[transformvar].TimesTuple(context.result[pointvar])
+
+@when(u'{resultvar:w} ← A * {pointvar:w}')
+def step_impl(context, resultvar, pointvar):
+    ApplyTransform( context, 'A', pointvar, resultvar )
+
+@when(u'{resultvar:w} ← B * {pointvar:w}')
+def step_impl(context, resultvar, pointvar):
+    ApplyTransform( context, 'B', pointvar, resultvar )
+
+@when(u'{resultvar:w} ← C * {pointvar:w}')
+def step_impl(context, resultvar, pointvar):
+    ApplyTransform( context, 'C', pointvar, resultvar )
+
+@then(u'{pointvar:w} = point({x:g}, {y:g}, {z:g})')
+def step_impl(context, pointvar, x, y, z):
+    print(u'STEP: Then {} = point({}, {}, {})'.format(pointvar, x, y, z))
+    assert pointvar in context.result
+    expected = Point(x, y, z)
+    assert expected.compare(context.result[pointvar]), 'Expected {} to equal {}, but it is {}'.format(pointvar, expected, context.result[pointvar])
+
+@when(u'T ← C * B * A')
+def step_impl(context):
+    print(u'STEP: When T ← C * B * A')
+    assert 'C' in context.result
+    assert 'B' in context.result
+    assert 'A' in context.result
+    context.result['T'] = context.result['C'] * context.result['B'] * context.result['A']
+    #raise NotImplementedError(u'STEP: When T ← C * B * A')
