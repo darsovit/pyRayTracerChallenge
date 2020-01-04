@@ -19,3 +19,6 @@ def Rotation_y( radian ):
 
 def Rotation_z( radian ):
     return Matrix(4,4,[[cos(radian),-sin(radian),0,0],[sin(radian),cos(radian),0,0],[0,0,1,0],[0,0,0,1]])
+
+def Shearing( x_y, x_z, y_x, y_z, z_x, z_y ):
+    return Matrix(4,4,[[1,x_y,x_z,0],[y_x,1,y_z,0],[z_x,z_y,1,0],[0,0,0,1]])

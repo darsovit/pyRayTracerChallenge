@@ -3,7 +3,7 @@
 # transformations steps
 
 from behave import given, then
-from renderer.transformations import Translation, Scaling, Rotation_x, Rotation_y, Rotation_z
+from renderer.transformations import Translation, Scaling, Rotation_x, Rotation_y, Rotation_z, Shearing
 from renderer.bolts import Point,Vector
 from math import sqrt, pi
 
@@ -106,3 +106,10 @@ def step_impl(context, transformvar, pointvar):
     expected = Point( -sqrt(2)/2, sqrt(2)/2, 0 )
     result = context.result[transformvar].TimesTuple( context.result[pointvar] )
     assert expected.compare(result), 'Expected transform {} against point {} would result in {}, but result was {}'.format(transformvar, pointvar, expected, result)
+
+@given(u'{var:w} ← shearing({x_y:g}, {x_z:g}, {y_x:g}, {y_z:g}, {z_x:g}, {z_y:g})')
+def step_impl(context, var, x_y, x_z, y_x, y_z, z_x, z_y):
+    print(u'STEP: Given {} ← shearing({}, {}, {}, {}, {}, {})'.format(var, x_y, x_z, y_x, y_z, z_x, z_y))
+    if 'result' not in context:
+        context.result = {}
+    context.result[var] = Shearing(x_y, x_z, y_x, y_z, z_x, z_y)

@@ -64,35 +64,35 @@ Scenario: Rotating a point around the z axis
   Then half_quarter * p = point(-√2/2, √2/2, 0)
     And full_quarter * p = point(-1, 0, 0)
 
-#Scenario: A shearing transformation moves x in proportion to y
-#  Given transform ← shearing(1, 0, 0, 0, 0, 0)
-#    And p ← point(2, 3, 4)
-#  Then transform * p = point(5, 3, 4)
+Scenario: A shearing transformation moves x in proportion to y
+  Given transform ← shearing(1, 0, 0, 0, 0, 0)
+    And p ← point(2, 3, 4)
+  Then transform * p = point(5, 3, 4)
 
-#Scenario: A shearing transformation moves x in proportion to z
-#  Given transform ← shearing(0, 1, 0, 0, 0, 0)
-#    And p ← point(2, 3, 4)
-#  Then transform * p = point(6, 3, 4)
+Scenario: A shearing transformation moves x in proportion to z
+  Given transform ← shearing(0, 1, 0, 0, 0, 0)
+    And p ← point(2, 3, 4)
+  Then transform * p = point(6, 3, 4)
 
-#Scenario: A shearing transformation moves y in proportion to x
-#  Given transform ← shearing(0, 0, 1, 0, 0, 0)
-#    And p ← point(2, 3, 4)
-#  Then transform * p = point(2, 5, 4)
+Scenario: A shearing transformation moves y in proportion to x
+  Given transform ← shearing(0, 0, 1, 0, 0, 0)
+    And p ← point(2, 3, 4)
+  Then transform * p = point(2, 5, 4)
 
-#Scenario: A shearing transformation moves y in proportion to z
-#  Given transform ← shearing(0, 0, 0, 1, 0, 0)
-#    And p ← point(2, 3, 4)
-#  Then transform * p = point(2, 7, 4)
+Scenario: A shearing transformation moves y in proportion to z
+  Given transform ← shearing(0, 0, 0, 1, 0, 0)
+    And p ← point(2, 3, 4)
+  Then transform * p = point(2, 7, 4)
 
-#Scenario: A shearing transformation moves z in proportion to x
-#  Given transform ← shearing(0, 0, 0, 0, 1, 0)
-#    And p ← point(2, 3, 4)
-#  Then transform * p = point(2, 3, 6)
+Scenario: A shearing transformation moves z in proportion to x
+  Given transform ← shearing(0, 0, 0, 0, 1, 0)
+    And p ← point(2, 3, 4)
+  Then transform * p = point(2, 3, 6)
 
-#Scenario: A shearing transformation moves z in proportion to y
-#  Given transform ← shearing(0, 0, 0, 0, 0, 1)
-#    And p ← point(2, 3, 4)
-#  Then transform * p = point(2, 3, 7)
+Scenario: A shearing transformation moves z in proportion to y
+  Given transform ← shearing(0, 0, 0, 0, 0, 1)
+    And p ← point(2, 3, 4)
+  Then transform * p = point(2, 3, 7)
 
 #Scenario: Individual transformations are applied in sequence
 #  Given p ← point(1, 0, 1)
