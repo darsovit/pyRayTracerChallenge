@@ -20,7 +20,7 @@ class Tuple:
     def __getitem__(self, item):
         return self.val[item]
 
-    def compare(self,other,epsilon):
+    def compare(self,other,epsilon=EPSILON):
         return ( isclose(self.val[0],other[0],abs_tol=epsilon) and
                  isclose(self.val[1],other[1],abs_tol=epsilon) and
                  isclose(self.val[2],other[2],abs_tol=epsilon) and

@@ -37,18 +37,18 @@ Scenario: Reflection is scaling by a negative value
     And p ← point(2, 3, 4)
    Then transform * p = point(-2, 3, 4)
 
-#Scenario: Rotating a point around the x axis
-#  Given p ← point(0, 1, 0)
-#    And half_quarter ← rotation_x(π / 4)
-#    And full_quarter ← rotation_x(π / 2)
-#  Then half_quarter * p = point(0, √2/2, √2/2)
-#    And full_quarter * p = point(0, 0, 1)
+Scenario: Rotating a point around the x axis
+  Given p ← point(0, 1, 0)
+    And half_quarter ← rotation_x(π / 4)
+    And full_quarter ← rotation_x(π / 2)
+  Then half_quarter * p = point(0, √2/2, √2/2)
+    And full_quarter * p = point(0, 0, 1)
 
-#Scenario: The inverse of an x-rotation rotates in the opposite direction
-#  Given p ← point(0, 1, 0)
-#    And half_quarter ← rotation_x(π / 4)
-#    And inv ← inverse(half_quarter)
-#  Then inv * p = point(0, √2/2, -√2/2)
+Scenario: The inverse of an x-rotation rotates in the opposite direction
+  Given p ← point(0, 1, 0)
+    And half_quarter ← rotation_x(π / 4)
+    And inv ← inverse(half_quarter)
+  Then inv * p = point(0, √2/2, -√2/2)
 
 #Scenario: Rotating a point around the y axis
 #  Given p ← point(0, 0, 1)
