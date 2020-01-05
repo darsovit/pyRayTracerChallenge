@@ -19,4 +19,4 @@ class Sphere:
             return ()
         t1 = ( -b - sqrt(discriminant) ) / (2 * a)
         t2 = ( -b + sqrt(discriminant) ) / (2 * a)
-        return [t1, t2]
+        return [{'time':t1, 'object':self}, {'time':t2, 'object':self}]

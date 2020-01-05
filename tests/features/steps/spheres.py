@@ -29,12 +29,3 @@ def step_impl(context, intersectionsvar, expected):
     result = len(context.result[intersectionsvar])
     assert expected == result, 'Expected {} intersections in {}, found {}'.format(expected, intersectionsvar, result)
 
-
-@then(u'{var:w}[{instance:d}] = {expected:g}')
-def step_impl(context, var, instance, expected):
-    print(u'STEP: Then {}[{}] = {}'.format(var, instance, expected))
-    assert var in context.result
-    assert len(context.result[var]) > instance
-    result = context.result[var][instance]
-    assert isclose(expected, result), 'Expected {}[{}] == {}, found it is {}'.format(var, instance, expected, result)
-    #raise NotImplementedError(u'STEP: Then xs[0] = 4.0')
