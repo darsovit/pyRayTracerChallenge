@@ -4,7 +4,7 @@
 
 from renderer.matrix import IdentityMatrix
 from math import sqrt
-from renderer.bolts import Point
+from renderer.bolts import Point, Vector
 
 class Sphere:
     def __init__(self):
@@ -28,3 +28,10 @@ class Sphere:
 
     def SetTransform(self, transform):
         self.transform = transform
+
+    def Normal(self, position):
+        object_point = self.Transform().Inverse().TimesTuple(position)
+        object_normal = object_point - Point(0,0,0)
+        world_normal  = self.Transform().Inverse().Transpose().TimesTuple(object_normal)
+        world_normal  = Vector( world_normal[0], world_normal[1], world_normal[2] )
+        return world_normal.normalize()

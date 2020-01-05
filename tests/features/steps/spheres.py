@@ -5,8 +5,9 @@
 from behave import given, then
 from renderer.sphere import Sphere
 from renderer.matrix import IdentityMatrix
-from renderer.transformations import Scaling, Translation
-from math import isclose
+from renderer.transformations import Scaling, Translation, Rotation_z
+from renderer.bolts import Point
+from math import isclose, sqrt, pi
 
 @given(u'{spherevar:w} ← sphere()')
 def step_impl(context, spherevar):
@@ -61,3 +62,42 @@ def step_impl(context, objectvar, x, y, z):
     print(u'STEP: When set_transform({}, translation({}, {}, {}))'.format(objectvar, x, y, z))
     assert objectvar in context.result
     context.result[objectvar].SetTransform( Translation( x, y, z) )
+
+@when(u'{resultvar:w} ← normal_at({objectvar:w}, point({x:g}, {y:g}, {z:g}))')
+def step_impl(context, resultvar, objectvar, x, y, z):
+    print(u'STEP: When {} ← normal_at({}, point({}, {}, {}))'.format(resultvar, objectvar, x, y, z))
+    assert objectvar in context.result
+    context.result[resultvar] = context.result[objectvar].Normal( Point(x, y, z) )
+
+@when(u'{resultvar:w} ← normal_at({objectvar:w}, point(√{xsqrt:d}/{xdenom:d}, √{ysqrt:d}/{ydenom:d}, √{zsqrt:d}/{zdenom:d}))')
+def step_impl(context, resultvar, objectvar, xsqrt, xdenom, ysqrt, ydenom, zsqrt, zdenom):
+    print(u'STEP: When n ← normal_at({}, point(√3/3, √3/3, √3/3))'.format(resultvar, objectvar, xsqrt, xdenom, ysqrt, ydenom, zsqrt, zdenom))
+    assert objectvar in context.result
+    context.result[resultvar] = context.result[objectvar].Normal( Point( sqrt(xsqrt)/xdenom, sqrt(ysqrt)/ydenom, sqrt(zsqrt)/zdenom ) )
+
+@given(u'set_transform({objectvar:w}, translation({x:g}, {y:g}, {z:g}))')
+def step_impl(context, objectvar, x, y, z):
+    print(u'STEP: Given set_transform({}, translation({}, {}, {}))'.format(objectvar, x, y, z))
+    assert objectvar in context.result
+    context.result[objectvar].SetTransform( Translation(x, y, z) )
+
+@given(u'{resultvar:w} ← scaling({scalex:g}, {scaley:g}, {scalez:g}) * rotation_z(π/{rotatez_pi_divider:g})')
+def step_impl(context, resultvar, scalex, scaley, scalez, rotatez_pi_divider):
+    print(u'STEP: Given {} ← scaling({}, {}, {}) * rotation_z(π/{})'.format(resultvar, scalex, scaley, scalez, rotatez_pi_divider))
+    if 'result' not in context:
+        context.result = {}
+    context.result[resultvar] = IdentityMatrix * Scaling(scalex, scaley, scalez) * Rotation_z( pi / rotatez_pi_divider )
+
+
+@given(u'set_transform({objectvar:w}, {transformvar:w})')
+def step_impl(context, objectvar, transformvar):
+    print(u'STEP: Given set_transform({}, {})'.format(objectvar, transformvar))
+    assert objectvar in context.result
+    context.result[objectvar].SetTransform( context.result[transformvar] )
+
+
+@when(u'{resultvar:w} ← normal_at({objectvar:w}, point({x:g}, √{ysqrt:d}/{ydenom:d}, -√{zsqrt:d}/{zdenom:d}))')
+def step_impl(context, resultvar, objectvar, x, ysqrt, ydenom, zsqrt, zdenom):
+    print(u'STEP: When {} ← normal_at({}, point({}, √{}/{}, -√{}/{}))'.format(resultvar, objectvar, x, ysqrt, ydenom, zsqrt, zdenom))
+    assert objectvar in context.result
+    context.result[resultvar] = context.result[objectvar].Normal( Point(x, sqrt(ysqrt)/ydenom, -(sqrt(zsqrt))/zdenom) )

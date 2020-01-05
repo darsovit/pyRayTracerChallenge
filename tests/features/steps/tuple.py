@@ -245,11 +245,27 @@ def step_impl(context):
     raise NotImplementedError(u'STEP: When r ← reflect(v, n)')
 
 
-@then(u'r = vector(1, 1, 0)')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then r = vector(1, 1, 0)')
+@then(u'{var:w} = vector({x:g}, {y:g}, {z:g})')
+def step_impl(context, var, x, y, z):
+    print(u'STEP: Then {} = vector({}, {}, {})'.format(var, x, y, z))
+    assert var in context.result
+    expected = Vector(x, y, z)
+    result   = context.result[var]
+    assert expected.compare(result), 'Expected {} to be {}, but found it is {}'.format(var, expected, result)
 
+@then(u'{var:w} = vector(√{xsqrt:d}/{xdenom:d}, √{ysqrt:d}/{ydenom:d}, √{zsqrt:d}/{zdenom:d})')
+def step_impl(context, var, xsqrt, xdenom, ysqrt, ydenom, zsqrt, zdenom):
+    print(u'STEP: Then {} = vector(√{}/{}, √{}/{}, √{}/{})'.format(var, xsqrt, xdenom, ysqrt, ydenom, zsqrt, zdenom ) )
+    assert var in context.result
+    expected = Vector( sqrt(xsqrt)/xdenom, sqrt(ysqrt)/ydenom, sqrt(zsqrt)/zdenom )
+    result   = context.result[var]
+    assert expected == result, 'Expected {} to be {}, but found it is {}'.format(var, expected, result)
 
-@then(u'r = vector(1, 0, 0)')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: Then r = vector(1, 0, 0)')
+@then(u'{var1:w} = normalize({var2:w})')
+def step_impl(context, var1, var2):
+    print(u'STEP: Then {} = normalize({})'.format(var1, var2))
+    assert var1 in context.result
+    assert var2 in context.result
+    expected = context.result[var1]
+    result = context.result[var2].normalize()
+    assert expected == result, 'Expected normalize({}) = {}, found it is {} instead'.format(var2, expected, result)
