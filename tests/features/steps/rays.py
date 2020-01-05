@@ -34,7 +34,6 @@ def step_impl(context, rayvar, pointx, pointy, pointz, vecx, vecy, vecz):
     if 'result' not in context:
         context.result = {}
     context.result[rayvar] = Ray(Point(pointx, pointy, pointz), Vector(vecx, vecy, vecz))
-    #raise NotImplementedError(u'STEP: Given r ← ray(point(2, 3, 4), vector(1, 0, 0))')
 
 @then(u'position({rayvar:w}, {time:g}) = point({pointx:g}, {pointy:g}, {pointz:g})')
 def step_impl(context, rayvar, time, pointx, pointy, pointz):
@@ -43,4 +42,3 @@ def step_impl(context, rayvar, time, pointx, pointy, pointz):
     expected = Point(pointx, pointy, pointz)
     result = context.result[rayvar].Position(time)
     assert expected == result, 'Expected ray {} position at time {} to be {}, result was {}'.format(rayvar, time, expected, result)
-    #raise NotImplementedError(u'STEP: Then position(r, 0) = point(2, 3, 4)')
