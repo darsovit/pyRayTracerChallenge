@@ -1,6 +1,8 @@
 #! python
 #
 #
+from behave import given,then,when
+from renderer.bolts import IdentifyHit
 
 @when(u'{intersectionvar:w} ← intersection({time:g}, {objectvar:w})')
 def step_impl(context, intersectionvar, time, objectvar):
@@ -40,4 +42,44 @@ def step_impl(context, var, instance, timeval):
     assert var in context.result
     result = context.result[var][instance]['time']
     assert timeval == result, 'Expected time of {}[{}] to be {}, found {} instead'.format(var, instance, timeval, result)
-    #raise NotImplementedError(u'STEP: Then xs[0].t = 1')
+
+
+@given(u'{var:w} ← intersections({intersection1var:w}, {intersection2var:w})')
+def step_impl(context, var, intersection1var, intersection2var):
+    print(u'STEP: Given {} ← intersections({}, {})'.format(var, intersection1var, intersection2var))
+    assert intersection1var in context.result
+    assert intersection2var in context.result
+    context.result[var] = [ context.result[intersection1var], context.result[intersection2var] ]
+
+
+@when(u'{resultvar:w} ← hit({intersectionsvar:w})')
+def step_impl(context, resultvar, intersectionsvar):
+    print(u'STEP: When {} ← hit({})'.format(resultvar, intersectionsvar))
+    assert intersectionsvar in context.result
+    context.result[resultvar] = IdentifyHit(context.result[intersectionsvar])
+
+
+@then(u'{var1:w} = {var2:w}')
+def step_impl(context, var1, var2):
+    print(u'STEP: Then {} = {}'.format(var1, var2))
+    assert context.result[var1] == context.result[var2], 'Expected {} to be equal to {}'.format(var1, var2)
+
+
+@then(u'{var:w} is nothing')
+def step_impl(context, var):
+    print(u'STEP: Then {} is nothing'.format(var))
+    assert var in context.result
+    assert context.result[var] == None, 'Expected {} in context to be nothing'.format(var)
+
+
+@given(u'{resultvar:w} ← intersections({var1:w}, {var2:w}, {var3:w}, {var4:w})')
+def step_impl(context, resultvar, var1, var2, var3, var4):
+    print(u'STEP: Given {} ← intersections({}, {}, {}, {})'.format(resultvar, var1, var2, var3, var4))
+    assert var1 in context.result
+    assert var2 in context.result
+    assert var3 in context.result
+    assert var4 in context.result
+    context.result[resultvar] = [ context.result[var1]
+                                , context.result[var2]
+                                , context.result[var3]
+                                , context.result[var4] ]

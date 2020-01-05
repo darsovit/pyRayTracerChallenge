@@ -146,4 +146,3 @@ def step_impl(context):
     assert 'B' in context.result
     assert 'A' in context.result
     context.result['T'] = context.result['C'] * context.result['B'] * context.result['A']
-    #raise NotImplementedError(u'STEP: When T ← C * B * A')

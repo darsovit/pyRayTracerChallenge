@@ -47,18 +47,6 @@ def step_impl(context,matrixvar):
 
 
 # Changing these to variables makes it too generic, better to leave as specific values for matrix tests
-@then(u'A = B')
-def step_impl(context):
-    lhs = 'A'
-    rhs = 'B'
-    print(u'STEP: Then {} = {}'.format(lhs,rhs))
-    assert 'result' in context
-    assert lhs in context.result
-    assert rhs in context.result
-    assert context.result[lhs] == context.result[rhs], 'Expected {} = {}'.format(lhs,rhs)
-
-
-# Changing these to variables makes it too generic, better to leave as specific values for matrix tests
 @then(u'A != B')
 def step_impl(context):
     lhs = 'A'
@@ -118,7 +106,6 @@ def step_impl(context,matrixvar,row,column,val):
     assert val == result, 'Expected Cofactor({}, {}, {}) = {}, found it equal to {}'.format(matrixvar, row, column, val, result)
 
 
-
 @then(u'{matrix1:w} * {matrix2:w} is the following {rows:d}x{cols:d} matrix')
 def step_impl(context,matrix1,matrix2,rows,cols):
     print(u'STEP: Then {} * {} is the following {}x{} matrix'.format(matrix1,matrix2,rows,cols))
@@ -154,8 +141,9 @@ def step_impl(context, matrixvar):
     print(u'STEP: Given {} ← transpose(identity_matrix)'.format(matrixvar))
     if 'result' not in context:
         context.result = {}
+    # placing the identity_matrix into the context.result will ensure that if compared against it is available
+    context.result['identity_matrix'] = IdentityMatrix
     context.result[matrixvar] = IdentityMatrix.Transpose()
-    pass
 
 
 @then(u'submatrix({matrixvar:w}, {row:d}, {column:d}) is the following {rows:d}x{columns:d} matrix')
@@ -172,7 +160,6 @@ def step_impl(context,destmatrix,sourcematrix,row,column):
     print(u'STEP: Given {} ← submatrix({}, {}, {})'.format(destmatrix,sourcematrix,row,column))
     assert sourcematrix in context.result, 'Expected Matrix {} to be available in context'.format(sourcematrix)
     context.result[destmatrix] = context.result[sourcematrix].Submatrix(row,column)
-    pass
 
 
 @then(u'{matrixvar:w} is invertible')
@@ -194,7 +181,6 @@ def step_impl(context, destmatrix, sourcematrix):
     print(u'STEP: Given B ← inverse(A)'.format(destmatrix,sourcematrix))
     assert sourcematrix in context.result
     context.result[destmatrix] = context.result[sourcematrix].Inverse()
-    pass
 
 
 @then(u'{matrixvar:w}[{row:d},{col:d}] = {numerator:g}/{denominator:g}')
@@ -228,7 +214,6 @@ def step_impl(context):
     assert 'B' in context.result
     assert 'A' in context.result
     context.result['C'] = context.result['A'] * context.result['B']
-    pass
 
 
 @then(u'{matrix1:w} * inverse({matrix2:w}) = {matrix3:w}')

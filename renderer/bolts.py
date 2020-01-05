@@ -105,6 +105,15 @@ class Color(Tuple):
         blue  = blue if blue >= 0 else 0
         return [ red, green, blue ]
 
+def IdentifyHit(intersections):
+    bestHit = None
+    for intersection in intersections:
+        if intersection['time'] < 0:
+            continue
+        if not bestHit or bestHit['time'] > intersection['time']:
+            bestHit = intersection
+    return bestHit
+    pass
 
 #def isPoint( aTuple ):
 #    return equality(aTuple[3], 1.0)
