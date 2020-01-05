@@ -123,3 +123,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# PPM files (output files from ray tracer)
+*.ppm
