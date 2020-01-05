@@ -15,3 +15,6 @@ class Ray:
 
     def Position(self, time):
         return self.origin + ( self.direction * time )
+
+    def Transform(self, matrix):
+        return Ray( matrix.TimesTuple(self.origin), matrix.TimesTuple(self.direction) )

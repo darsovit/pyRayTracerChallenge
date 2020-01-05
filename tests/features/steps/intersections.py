@@ -83,3 +83,12 @@ def step_impl(context, resultvar, var1, var2, var3, var4):
                                 , context.result[var2]
                                 , context.result[var3]
                                 , context.result[var4] ]
+
+@then(u'{intersectsvar:w}[{instance:d}].object = {objectvar:w}')
+def step_impl(context, intersectsvar, instance, objectvar):
+    print(u'STEP: Then {}[{}].object = {}'.format(intersectsvar, instance, objectvar))
+    assert intersectsvar in context.result
+    assert objectvar in context.result
+    result = context.result[intersectsvar][instance]['object']
+    expected = context.result[objectvar]
+    assert expected == result, 'Expected {}[{}].object to be {}, but found {} instead'.format(intersectsvar, instance, expected, result)

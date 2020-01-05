@@ -42,3 +42,28 @@ def step_impl(context, rayvar, time, pointx, pointy, pointz):
     expected = Point(pointx, pointy, pointz)
     result = context.result[rayvar].Position(time)
     assert expected == result, 'Expected ray {} position at time {} to be {}, result was {}'.format(rayvar, time, expected, result)
+
+@when(u'{resultvar:w} ← transform({rayvar:w}, {matrixvar:w})')
+def step_impl(context, resultvar, rayvar, matrixvar):
+    print(u'STEP: When {} ← transform({}, {})'.format(resultvar, rayvar, matrixvar))
+    assert rayvar in context.result
+    assert matrixvar in context.result
+    context.result[resultvar] = context.result[rayvar].Transform(context.result[matrixvar])
+
+
+@then(u'{rayvar:w}.origin = point({x:g}, {y:g}, {z:g})')
+def step_impl(context, rayvar, x, y, z):
+    print(u'STEP: Then {}.origin = point({}, {}, {})'.format(rayvar, x, y, z))
+    assert rayvar in context.result
+    expected = Point(x, y, z)
+    result = context.result[rayvar].Origin()
+    assert expected == result, 'Expected origin of {} to be {}, found it is {}'.format(rayvar, expected, result)
+
+
+@then(u'{rayvar:w}.direction = vector({x:g}, {y:g}, {z:g})')
+def step_impl(context, rayvar, x, y, z):
+    print(u'STEP: Then {}.direction = vector({}, {}, {})'.format(rayvar, x, y, z))
+    assert rayvar in context.result
+    expected = Vector(x, y, z)
+    result   = context.result[rayvar].Direction()
+    assert expected == result, 'Expected direction of {} to be {}, found it is {}'.format(rayvar, expected, result)

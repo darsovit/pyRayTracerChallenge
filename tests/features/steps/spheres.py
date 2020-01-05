@@ -4,6 +4,8 @@
 
 from behave import given, then
 from renderer.sphere import Sphere
+from renderer.matrix import IdentityMatrix
+from renderer.transformations import Scaling, Translation
 from math import isclose
 
 @given(u'{spherevar:w} ← sphere()')
@@ -11,6 +13,7 @@ def step_impl(context, spherevar):
     print(u'STEP: Given s ← sphere()'.format(spherevar))
     if 'result' not in context:
         context.result = {}
+        context.result['identity_matrix'] = IdentityMatrix
     context.result[spherevar] = Sphere()
     pass
 
@@ -29,3 +32,32 @@ def step_impl(context, intersectionsvar, expected):
     result = len(context.result[intersectionsvar])
     assert expected == result, 'Expected {} intersections in {}, found {}'.format(expected, intersectionsvar, result)
 
+
+@then(u'{objectvar:w}.transform = {expectedvar:w}')
+def step_impl(context, objectvar, expectedvar):
+    print(u'STEP: Then s.transform = identity_matrix'.format(objectvar, expectedvar))
+    assert objectvar   in context.result
+    assert expectedvar in context.result
+    expected = context.result[expectedvar]
+    result   = context.result[objectvar].Transform()
+    assert expected == result, 'Expected object {} transform matrix to be {}, found {}'.format(objectvar, expected, result)
+
+@when(u'set_transform({objectvar:w}, {transformvar:w})')
+def step_impl(context, objectvar, transformvar):
+    print(u'STEP: When set_transform({}, {})'.format(objectvar, transformvar))
+    assert objectvar in context.result
+    assert transformvar in context.result
+    context.result[objectvar].SetTransform( context.result[transformvar] )
+
+
+@when(u'set_transform({objectvar:w}, scaling({x:g}, {y:g}, {z:g}))')
+def step_impl(context, objectvar, x, y, z):
+    print(u'STEP: When set_transform({}, scaling({}, {}, {}))'.format(objectvar, x, y, z))
+    assert objectvar in context.result
+    context.result[objectvar].SetTransform( Scaling(x, y, z) )
+
+@when(u'set_transform({objectvar:w}, translation({x:g}, {y:g}, {z:g}))')
+def step_impl(context, objectvar, x, y, z):
+    print(u'STEP: When set_transform({}, translation({}, {}, {}))'.format(objectvar, x, y, z))
+    assert objectvar in context.result
+    context.result[objectvar].SetTransform( Translation( x, y, z) )
