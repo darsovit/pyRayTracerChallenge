@@ -61,6 +61,9 @@ class Tuple:
     def dot(self, other):
         return self[0] * other[0] + self[1]*other[1] + self[2]*other[2] + self[3]*other[3]
 
+    def reflect(self, normal):
+        return self - normal * 2 * self.dot(normal)
+
 
 class Point(Tuple):
     def __init__(self, x, y, z):

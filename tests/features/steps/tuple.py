@@ -240,9 +240,12 @@ def step_impl(context, var1, var2, r, g, b):
     assert expected == result, 'Expected {} == {} * {} = {} * {} = {}'.format(expected, var1, var2, context.result[var1], context.result[var2], result)
 
 
-@when(u'r ← reflect(v, n)')
-def step_impl(context):
-    raise NotImplementedError(u'STEP: When r ← reflect(v, n)')
+@when(u'{result:w} ← reflect({vectorvar:w}, {normalvar:w})')
+def step_impl(context, result, vectorvar, normalvar):
+    print(u'STEP: When {} ← reflect(v, n)'.format(result, vectorvar, normalvar))
+    assert vectorvar in context.result
+    assert normalvar in context.result
+    context.result[result] = context.result[vectorvar].reflect(context.result[normalvar])
 
 
 @then(u'{var:w} = vector({x:g}, {y:g}, {z:g})')
@@ -269,3 +272,10 @@ def step_impl(context, var1, var2):
     expected = context.result[var1]
     result = context.result[var2].normalize()
     assert expected == result, 'Expected normalize({}) = {}, found it is {} instead'.format(var2, expected, result)
+
+@given(u'{result:w} ← vector(√{xsqrt:d}/{xdenom:d}, √{ysqrt:d}/{ydenom:d}, {z:g})')
+def step_impl(context, result, xsqrt, xdenom, ysqrt, ydenom, z):
+    print(u'STEP: Given n ← vector(√2/2, √2/2, 0)'.format(result, xsqrt, xdenom, ysqrt, ydenom, z))
+    if 'result' not in context:
+        context.result = {}
+    context.result[result] = Vector( sqrt(xsqrt)/xdenom, sqrt(ysqrt)/ydenom, z )
