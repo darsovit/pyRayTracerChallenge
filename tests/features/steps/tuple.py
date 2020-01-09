@@ -6,6 +6,25 @@ from math import isclose, sqrt
 
 EPSILON = 0.0001
 
+
+def determineNumeric(stringval):
+    fractional = stringval.split('/')
+    assert len(fractional) < 3
+    denominator = 1
+    numerator   = 1
+    if len(fractional) == 2:
+        denominator = float(fractional[1])
+    sqrtsplit = fractional[0].split('√')
+    assert len(sqrtsplit) < 3
+    if len(sqrtsplit) == 2:
+        numerator *= sqrt(float(sqrtsplit[1]))
+    if len(sqrtsplit[0]) > 0:
+        if len(sqrtsplit[0]) == 1 and sqrtsplit[0][0] == '-':
+            numerator *= -1
+        else:
+            numerator *= float(sqrtsplit[0])
+    return numerator / denominator
+
 @given(u'{var:w} ← tuple({x:g}, {y:g}, {z:g}, {w:g})')
 def step_impl(context, var, x, y, z, w):
     print(u'STEP: {} ← tuple({}, {}, {}, {})'.format(var, x, y, z, w))
@@ -68,13 +87,6 @@ def step_impl(context, var, x, y, z):
     pass
 
 
-@given(u'{var:w} ← vector({x:g}, {y:g}, {z:g})')
-def step_impl(context, var, x, y, z):
-    print(u'STEP: {} ← vector({}, {}, {})'.format(var, x, y, z))
-    if 'result' not in context:
-        context.result = {}
-    context.result[var] = Vector(x,y,z)
-    pass
 
 @then(u'{var1:w} + {var2:w} = tuple({x:g}, {y:g}, {z:g}, {w:g})')
 def step_impl(context, var1, var2, x, y, z, w):
@@ -134,16 +146,12 @@ def step_impl(context, var1, var2, x, y, z):
     assert expected == result, 'Expected {} == {} - {} ({} = {} - {})'.format(expected,var1,var2,result,context.result[var1],context.result[var2])
 
 
-@then(u'magnitude({var1:w}) = √{val:g}')
-def step_impl(context, var1, val):
-    print(u'STEP: magnitude({}) = √{}'.format(var1,val))
-    assert isclose(context.result[var1].magnitude(),sqrt(val)), 'Expected {} = magnitude({}) = {}'.format(sqrt(val),var1, context.result[var1].magnitude())
-
-
-@then(u'magnitude({var1:w}) = {val:g}')
+@then(u'magnitude({var1:w}) = {val:S}')
 def step_impl(context, var1, val):
     print(u'STEP: magnitude({}) = {}'.format(var1,val))
-    assert isclose(context.result[var1].magnitude(),val), 'Expected {} = magnitude({}) = {}'.format(val, var1, context.result[var1].magnitude())
+    expected = determineNumeric(val)
+    result = context.result[var1].magnitude()
+    assert isclose(expected, result), 'Expected {} = magnitude({}) = {}'.format(expected, var1, result)
 
 
 @then(u'normalize({var1:w}) = vector({x:g}, {y:g}, {z:g})')
@@ -231,6 +239,12 @@ def step_impl(context, var, r, g, b):
     result = context.result[var] * scalar
     assert expected == result, 'Expected {} == {} * {} = {}'.format(expected,var,scalar,result)
 
+@then(u'{var:w} = color({r:g}, {g:g}, {b:g})')
+def step_impl(context, var, r, g, b):
+    print(u'STEP: Then {} = color({}, {}, {})'.format(var, r, g, b))
+    expected = Color(r,g,b)
+    result   = context.result[var]
+    assert expected.compare(result), 'Expected {} to be {}, found it to be {} instead'.format( var, expected, result )
 
 @then(u'{var1:w} * {var2:w} = color({r:g}, {g:g}, {b:g})')
 def step_impl(context, var1, var2, r, g, b):
@@ -248,21 +262,14 @@ def step_impl(context, result, vectorvar, normalvar):
     context.result[result] = context.result[vectorvar].reflect(context.result[normalvar])
 
 
-@then(u'{var:w} = vector({x:g}, {y:g}, {z:g})')
+@then(u'{var:w} = vector({x:S}, {y:S}, {z:S})')
 def step_impl(context, var, x, y, z):
     print(u'STEP: Then {} = vector({}, {}, {})'.format(var, x, y, z))
     assert var in context.result
-    expected = Vector(x, y, z)
+    expected = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
     result   = context.result[var]
     assert expected.compare(result), 'Expected {} to be {}, but found it is {}'.format(var, expected, result)
 
-@then(u'{var:w} = vector(√{xsqrt:d}/{xdenom:d}, √{ysqrt:d}/{ydenom:d}, √{zsqrt:d}/{zdenom:d})')
-def step_impl(context, var, xsqrt, xdenom, ysqrt, ydenom, zsqrt, zdenom):
-    print(u'STEP: Then {} = vector(√{}/{}, √{}/{}, √{}/{})'.format(var, xsqrt, xdenom, ysqrt, ydenom, zsqrt, zdenom ) )
-    assert var in context.result
-    expected = Vector( sqrt(xsqrt)/xdenom, sqrt(ysqrt)/ydenom, sqrt(zsqrt)/zdenom )
-    result   = context.result[var]
-    assert expected == result, 'Expected {} to be {}, but found it is {}'.format(var, expected, result)
 
 @then(u'{var1:w} = normalize({var2:w})')
 def step_impl(context, var1, var2):
@@ -273,9 +280,9 @@ def step_impl(context, var1, var2):
     result = context.result[var2].normalize()
     assert expected == result, 'Expected normalize({}) = {}, found it is {} instead'.format(var2, expected, result)
 
-@given(u'{result:w} ← vector(√{xsqrt:d}/{xdenom:d}, √{ysqrt:d}/{ydenom:d}, {z:g})')
-def step_impl(context, result, xsqrt, xdenom, ysqrt, ydenom, z):
-    print(u'STEP: Given n ← vector(√2/2, √2/2, 0)'.format(result, xsqrt, xdenom, ysqrt, ydenom, z))
+@given(u'{resultvar:w} ← vector({x:S}, {y:S}, {z:S})')
+def step_impl(context, resultvar, x, y, z):
+    print(u'STEP: Given {} ← vector({}, {}, {})'.format(resultvar, x, y, z))
     if 'result' not in context:
         context.result = {}
-    context.result[result] = Vector( sqrt(xsqrt)/xdenom, sqrt(ysqrt)/ydenom, z )
+    context.result[resultvar] = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )

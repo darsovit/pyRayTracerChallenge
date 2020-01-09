@@ -101,3 +101,25 @@ def step_impl(context, resultvar, objectvar, x, ysqrt, ydenom, zsqrt, zdenom):
     print(u'STEP: When {} ← normal_at({}, point({}, √{}/{}, -√{}/{}))'.format(resultvar, objectvar, x, ysqrt, ydenom, zsqrt, zdenom))
     assert objectvar in context.result
     context.result[resultvar] = context.result[objectvar].Normal( Point(x, sqrt(ysqrt)/ydenom, -(sqrt(zsqrt))/zdenom) )
+
+@when(u'{result} ← {spherevar}.material')
+def step_impl(context, result, spherevar):
+    print(u'STEP: When {} ← {}.material'.format(result, spherevar))
+    assert spherevar in context.result
+    context.result[result] = context.result[spherevar].Material()
+
+@when(u'{spherevar:w}.material ← {materialvar:w}')
+def step_impl(context, spherevar, materialvar):
+    print(u'STEP: When {}.material ← {}'.format(spherevar, materialvar))
+    assert spherevar in context.result
+    assert materialvar in context.result
+    context.result[spherevar].SetMaterial(context.result[materialvar])
+
+
+@then(u'{spherevar:w}.material = {materialvar:w}')
+def step_impl(context, spherevar, materialvar):
+    print(u'STEP: Then {}.material = {}'.format(spherevar, materialvar))
+    assert spherevar in context.result
+    assert materialvar in context.result
+    result = context.result[spherevar].Material()
+    assert context.result[materialvar] == result, 'Expected Object {} material to be equal to {}, found it is {}'.format(spherevar, context.result[materialvar], result)

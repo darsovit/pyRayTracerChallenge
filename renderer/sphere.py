@@ -5,10 +5,12 @@
 from renderer.matrix import IdentityMatrix
 from math import sqrt
 from renderer.bolts import Point, Vector
+from renderer.material import Material
 
 class Sphere:
     def __init__(self):
         self.transform = IdentityMatrix
+        self.material  = Material()
 
     def Intersect(self, ray):
         transformedRay = ray.Transform( self.Transform().Inverse() )
@@ -35,3 +37,9 @@ class Sphere:
         world_normal  = self.Transform().Inverse().Transpose().TimesTuple(object_normal)
         world_normal  = Vector( world_normal[0], world_normal[1], world_normal[2] )
         return world_normal.normalize()
+
+    def Material(self):
+        return self.material
+
+    def SetMaterial(self, material):
+        self.material = material
