@@ -4,30 +4,31 @@ from renderer.bolts import Color
 from math import isclose
 
 class Material:
-    def __init__(self):
-        self.color = Color(1,1,1)
-        self.ambient = 0.1
-        self.diffuse = 0.9
-        self.specular = 0.9
-        self.shininess = 200.0
+    defaultColor = Color(1,1,1)
+    def __init__(self, color=Color(1,1,1),ambient=0.1,diffuse=0.9,specular=0.9,shininess=200.0):
+        self.__color = color
+        self.__ambient = ambient
+        self.__diffuse = diffuse
+        self.__specular = specular
+        self.__shininess = shininess
 
     def Color(self):
-        return self.color
+        return self.__color
 
     def Ambient(self):
-        return self.ambient
+        return self.__ambient
 
     def Diffuse(self):
-        return self.diffuse
+        return self.__diffuse
 
     def Specular(self):
-        return self.specular
+        return self.__specular
 
     def Shininess(self):
-        return self.shininess
+        return self.__shininess
 
     def SetAmbient(self, ambient):
-        self.ambient = ambient
+        self.__ambient = ambient
 
     def __eq__(self, rhs):
         return ( self.Color() == rhs.Color()
@@ -38,8 +39,8 @@ class Material:
 
 
     def Lighting(self, light, position, eyev, normalv):
-        effectiveColor = self.color.multiply( light.Intensity() )
-        ambientColor = effectiveColor * self.ambient
+        effectiveColor = self.Color().multiply( light.Intensity() )
+        ambientColor = effectiveColor * self.Ambient()
         black = Color(0,0,0)
         diffuseColor = black
         specularColor = black
@@ -48,11 +49,12 @@ class Material:
         lightDotNormal = lightv.dot(normalv)
 
         if lightDotNormal >= 0:
-            diffuseColor = effectiveColor * self.diffuse * lightDotNormal
+            diffuseColor = effectiveColor * self.Diffuse() * lightDotNormal
 
             reflectv = -lightv.reflect( normalv )
             reflectDotEye = reflectv.dot(eyev)
             if reflectDotEye > 0:
-                factor = pow(reflectDotEye, self.shininess)
-                specularColor = Color(1,1,1).multiply( light.Intensity() ) * self.specular * factor
-        return ambientColor + diffuseColor + specularColor
+                factor = pow(reflectDotEye, self.Shininess())
+                specularColor = light.Intensity() * self.Specular() * factor
+        result = ambientColor + diffuseColor + specularColor
+        return Color( result[0], result[1], result[2] )

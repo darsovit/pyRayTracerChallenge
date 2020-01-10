@@ -8,9 +8,10 @@ from renderer.bolts import Point, Vector
 from renderer.material import Material
 
 class Sphere:
-    def __init__(self):
-        self.transform = IdentityMatrix
-        self.material  = Material()
+    
+    def __init__(self, transform=IdentityMatrix, material=Material()):
+        self.__transform = transform
+        self.__material  = material
 
     def Intersect(self, ray):
         transformedRay = ray.Transform( self.Transform().Inverse() )
@@ -26,10 +27,10 @@ class Sphere:
         return [{'time':t1, 'object':self}, {'time':t2, 'object':self}]
 
     def Transform(self):
-        return self.transform
+        return self.__transform
 
     def SetTransform(self, transform):
-        self.transform = transform
+        self.__transform = transform
 
     def Normal(self, position):
         object_point = self.Transform().Inverse().TimesTuple(position)
@@ -39,7 +40,7 @@ class Sphere:
         return world_normal.normalize()
 
     def Material(self):
-        return self.material
+        return self.__material
 
     def SetMaterial(self, material):
-        self.material = material
+        self.__material = material
