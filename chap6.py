@@ -21,7 +21,7 @@ half          = wall_size / 2
 canvas = Canvas( canvas_pixels, canvas_pixels )
 
 
-shape  = Sphere(Material(Color(1,0.2,1), specular=0.9))
+shape  = Sphere(Material(Color(1,0.2,1)))
 
 light  = PointLight(Point(-5,5,-10), Color(1,1,1))
 
