@@ -119,3 +119,18 @@ def step_impl(context, compsvar, intersectionvar):
     result   = context.result[compsvar]['object']
     assert expected == result, 'Expected object in intersection {} to match object in computations {}, but they are not the same'.format(intersectionvar, compsvar)
 
+@then(u'{compsvar:w}.inside = false')
+def step_impl(context, compsvar):
+    expected = False
+    print(u'STEP: Then {}.inside = {}'.format(compsvar, expected))
+    assert compsvar in context.result
+    result = context.result[compsvar]['inside']
+    assert expected == result, 'Expected computations {} to indicate inside was {}, but found it as {}'.format(compsvar, expected, result)
+
+@then(u'{compsvar:w}.inside = true')
+def step_impl(context, compsvar):
+    expected = True
+    print(u'STEP: Then {}.inside = {}'.format(compsvar, expected))
+    assert compsvar in context.result
+    result = context.result[compsvar]['inside']
+    assert expected == result, 'Expected computations {} to indicate inside was {}, but found it as {}'.format(compsvar, expected, result)

@@ -46,6 +46,9 @@ class Sphere:
         computations['point']  = ray.Position(time)
         computations['eyev']   = -ray.Direction().normalize()
         computations['normalv'] = self.Normal( computations['point'] )
+        computations['inside'] = 0 > computations['normalv'].dot(computations['eyev'])
+        if computations['inside']:
+            computations['normalv'] = -computations['normalv']
         return computations
 
     def Material(self):
