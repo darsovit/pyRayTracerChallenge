@@ -1,28 +1,24 @@
 #! python
 #
 #
+from renderer.bolts import Point
 from math import isclose
-from renderer.bolts import Point, Vector
+
 class Ray:
     def __init__(self, origin, direction):
-        assert origin.isPoint()
-        assert direction.isVector()
-        self.__origin = origin
-        self.__direction = direction
+        self.origin = origin
+        self.direction = direction
 
     def Origin(self):
-        return self.__origin
+        return self.origin
 
     def Direction(self):
-        return self.__direction
+        return self.direction
 
     def Position(self, time):
-        return self.Origin() + ( self.Direction() * time )
+        newPos = self.origin + ( self.direction * time )
+        assert newPos[3] == 1
+        return Point( newPos[0], newPos[1], newPos[2] )
 
     def Transform(self, matrix):
-        newPointTuple = matrix.TimesTuple(self.Origin())
-        assert isclose( newPointTuple[3], 1.0 )
-        newVectorTuple = matrix.TimesTuple(self.Direction())
-        assert isclose( newVectorTuple[3], 0.0 )
-        return Ray( Point(newPointTuple[0], newPointTuple[1], newPointTuple[2]),
-                    Vector(newVectorTuple[0], newVectorTuple[1], newVectorTuple[2]) )
+        return Ray( matrix.TimesTuple(self.origin), matrix.TimesTuple(self.direction) )

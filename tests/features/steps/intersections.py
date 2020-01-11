@@ -92,3 +92,30 @@ def step_impl(context, intersectsvar, instance, objectvar):
     result = context.result[intersectsvar][instance]['object']
     expected = context.result[objectvar]
     assert expected == result, 'Expected {}[{}].object to be {}, but found {} instead'.format(intersectsvar, instance, expected, result)
+
+@when(u'{compsvar:w} ← prepare_computations({intersectionvar:w}, {rayvar:w})')
+def step_impl(context, compsvar, intersectionvar, rayvar):
+    print(u'STEP: When {} ← prepare_computations({}, {})'.format(compsvar, intersectionvar, rayvar))
+    assert intersectionvar in context.result
+    assert rayvar in context.result
+    context.result[compsvar] = context.result[intersectionvar]['object'].PrepareComputations(context.result[rayvar], context.result[intersectionvar]['time'])
+
+@then(u'{compsvar:w}.t = {intersectionvar:w}.t')
+def step_impl(context, compsvar, intersectionvar):
+    print(u'STEP: Then {}.t = {}.t'.format(compsvar, intersectionvar))
+    assert compsvar in context.result
+    assert intersectionvar in context.result
+    expected = context.result[intersectionvar]['time']
+    result   = context.result[compsvar]['time']
+    assert expected == result, 'Expected time in intersection {} to match time in computations {}, but {} != {}'.format(intersectionvar, compsvar, expected, result)
+
+
+@then(u'{compsvar:w}.object = {intersectionvar:w}.object')
+def step_impl(context, compsvar, intersectionvar):
+    print(u'STEP: Then {}.object = {}.object'.format(compsvar, intersectionvar))
+    assert compsvar in context.result
+    assert intersectionvar in context.result
+    expected = context.result[intersectionvar]['object']
+    result   = context.result[compsvar]['object']
+    assert expected == result, 'Expected object in intersection {} to match object in computations {}, but they are not the same'.format(intersectionvar, compsvar)
+

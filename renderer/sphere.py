@@ -39,6 +39,15 @@ class Sphere:
         world_normal  = Vector( world_normal[0], world_normal[1], world_normal[2] )
         return world_normal.normalize()
 
+    def PrepareComputations(self, ray, time):
+        computations = {}
+        computations['time'] = time
+        computations['object'] = self
+        computations['point']  = ray.Position(time)
+        computations['eyev']   = -ray.Direction().normalize()
+        computations['normalv'] = self.Normal( computations['point'] )
+        return computations
+
     def Material(self):
         return self.__material
 

@@ -47,6 +47,13 @@ def step_impl(context, worldvar):
         context.result = {}
     context.result[worldvar] = BuildDefaultWorld()
 
+@given(u'{worldvar:w} ← default_world()')
+def step_impl(context, worldvar):
+    print(u'STEP: When {} ← default_world()'.format(worldvar))
+    if 'result' not in context:
+        context.result = {}
+    context.result[worldvar] = BuildDefaultWorld()
+
 @then(u'{worldvar:w}.light = {lightvar:w}')
 def step_impl(context, worldvar, lightvar):
     print(u'STEP: Then {}.light = {}'.format(worldvar, lightvar))
@@ -70,3 +77,9 @@ def step_impl(context, worldvar, objectvar):
         #    print( 'No match:\n\t{}\n\t{}'.format( anObject, context.result[objectvar] ) )
     assert foundMatchingObject, 'Expected to find matching object {} in world {} among {} objects'.format(objectvar, worldvar, context.result[worldvar].NumObjects())
 
+@when(u'{intersectionsvar:w} ← intersect_world({worldvar:w}, {rayvar:w})')
+def step_impl(context, intersectionsvar, worldvar, rayvar):
+    print(u'STEP: When {} ← intersect_world({}, {})'.format(intersectionsvar, worldvar, rayvar))
+    assert worldvar in context.result
+    assert rayvar in context.result
+    context.result[intersectionsvar] = context.result[worldvar].Intersects(context.result[rayvar])

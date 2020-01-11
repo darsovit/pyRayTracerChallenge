@@ -286,3 +286,29 @@ def step_impl(context, resultvar, x, y, z):
     if 'result' not in context:
         context.result = {}
     context.result[resultvar] = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+
+@then(u'{compsvar:w}.point = point({x:S}, {y:S}, {z:S})')
+def step_impl(context, compsvar, x, y, z):
+    print(u'STEP: Then {}.point = point({}, {}, {})'.format(compsvar, x, y, z))
+    assert compsvar in context.result
+    expected = Point( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    result   = context.result[compsvar]['point']
+    assert expected.compare(result), 'Expected computation {} point is {}, found it as {}'.format(compsvar, expected, result)
+
+
+@then(u'{compsvar}.eyev = vector({x:S}, {y:S}, {z:S})')
+def step_impl(context, compsvar, x, y, z):
+    print(u'STEP: Then {}.eyev = vector({}, {}, {})'.format(compsvar, x, y, z))
+    assert compsvar in context.result
+    expected = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    result   = context.result[compsvar]['eyev']
+    assert expected.compare(result), 'Expected computation {} eyev is {}, found it is {}'.format( compsvar, expected, result )
+
+
+@then(u'{compsvar:w}.normalv = vector({x:S}, {y:S}, {z:S})')
+def step_impl(context, compsvar, x, y, z):
+    print(u'STEP: Then {}.normalv = vector({}, {}, {})'.format(compsvar, x, y, z))
+    assert compsvar in context.result
+    expected = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    result = context.result[compsvar]['normalv']
+    assert expected.compare(result), 'Expected computation {} normalv is {}, found it is {}'.format( compsvar, expected, result )

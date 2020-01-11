@@ -17,3 +17,10 @@ class World:
 
     def Objects(self):
         return self.__objects
+
+    def Intersects(self, ray):
+        intersections = []
+        for object in self.Objects():
+            intersections += object.Intersect( ray )
+        intersections.sort(key=lambda x: x['time'])
+        return intersections

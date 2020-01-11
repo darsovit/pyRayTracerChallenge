@@ -18,16 +18,16 @@ Scenario: The default world
     And w contains s1
     And w contains s2
 
-#Scenario: Intersect a world with a ray
-#  Given w ← default_world()
-#    And r ← ray(point(0, 0, -5), vector(0, 0, 1))
-#  When xs ← intersect_world(w, r)
-#  Then xs.count = 4
-#    And xs[0].t = 4
-#    And xs[1].t = 4.5
-#    And xs[2].t = 5.5
-#    And xs[3].t = 6
-#
+Scenario: Intersect a world with a ray
+  Given w ← default_world()
+    And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+  When xs ← intersect_world(w, r)
+  Then xs.count = 4
+    And xs[0].t = 4
+    And xs[1].t = 4.5
+    And xs[2].t = 5.5
+    And xs[3].t = 6
+
 #Scenario: Shading an intersection
 #  Given w ← default_world()
 #    And r ← ray(point(0, 0, -5), vector(0, 0, 1))
