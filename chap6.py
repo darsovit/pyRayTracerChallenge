@@ -21,7 +21,7 @@ half          = wall_size / 2
 canvas = Canvas( canvas_pixels, canvas_pixels )
 
 
-shape  = Sphere(Material(Color(1,0.2,1)))
+shape  = Sphere(material=Material(Color(1,0.2,1)))
 
 light  = PointLight(Point(-5,5,-10), Color(1,1,1))
 
@@ -37,7 +37,7 @@ for y in range(canvas_pixels):
             point = r.Position(hit['time'])
             normal = shape.Normal(point)
             eyev   = -r.Direction()
-            color = shape.material.Lighting( light, point, eyev, normal )
+            color = shape.Material().Lighting( light, point, eyev, normal )
             canvas.SetPixel( x, y, color )
 
 imageData = canvas.ToPpm()
