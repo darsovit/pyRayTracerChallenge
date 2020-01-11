@@ -12,3 +12,6 @@ class PointLight:
 
     def Intensity(self):
         return self.intensity
+
+    def __eq__(self, rhs):
+        return self.Position() == rhs.Position() and self.Intensity() == rhs.Intensity()

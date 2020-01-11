@@ -3,14 +3,24 @@ from renderer.bolts import Color
 
 from math import isclose
 
+DefaultProperties = {'color':Color(1,1,1), 'ambient':0.1, 'diffuse':0.9, 'specular':0.9, 'shininess':200.0}
+
 class Material:
     defaultColor = Color(1,1,1)
-    def __init__(self, color=Color(1,1,1),ambient=0.1,diffuse=0.9,specular=0.9,shininess=200.0):
+    def __init__(self,
+                 color=DefaultProperties['color'],
+                 ambient=DefaultProperties['ambient'],
+                 diffuse=DefaultProperties['diffuse'],
+                 specular=DefaultProperties['specular'],
+                 shininess=DefaultProperties['shininess']):
         self.__color = color
         self.__ambient = ambient
         self.__diffuse = diffuse
         self.__specular = specular
         self.__shininess = shininess
+
+    def DefaultProperties():
+        return DefaultProperties
 
     def Color(self):
         return self.__color
@@ -37,6 +47,12 @@ class Material:
              and isclose(self.Specular(), rhs.Specular())
              and isclose(self.Shininess(), rhs.Shininess()) )
 
+    def __str__(self):
+        return ' '.join(list(map(str,['Color:', self.Color()
+            , 'Ambient:', self.Ambient()
+            , 'Diffuse:', self.Diffuse()
+            , 'Specular:', self.Specular()
+            , 'Shininess:', self.Shininess() ])))
 
     def Lighting(self, light, position, eyev, normalv):
         effectiveColor = self.Color().multiply( light.Intensity() )

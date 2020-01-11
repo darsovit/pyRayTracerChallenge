@@ -44,3 +44,9 @@ class Sphere:
 
     def SetMaterial(self, material):
         self.__material = material
+
+    def __str__(self):
+        return ' '.join(list(map(str, ['Sphere:{', 'Material:', self.Material(), 'Transform:', self.Transform(), '}'])))
+
+    def __eq__(self, rhs):
+        return self.Material() == rhs.Material() and self.Transform() == rhs.Transform()

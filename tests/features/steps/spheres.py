@@ -6,8 +6,11 @@ from behave import given, then
 from renderer.sphere import Sphere
 from renderer.matrix import IdentityMatrix
 from renderer.transformations import Scaling, Translation, Rotation_z
-from renderer.bolts import Point
+from renderer.material import Material
+from renderer.bolts import Point, Color
 from math import isclose, sqrt, pi
+from parse import *
+from parse import compile
 
 @given(u'{spherevar:w} ← sphere()')
 def step_impl(context, spherevar):
@@ -123,3 +126,54 @@ def step_impl(context, spherevar, materialvar):
     assert materialvar in context.result
     result = context.result[spherevar].Material()
     assert context.result[materialvar] == result, 'Expected Object {} material to be equal to {}, found it is {}'.format(spherevar, context.result[materialvar], result)
+
+def buildMaterial( materialProps ):
+    aMaterial = {}
+    for prop in Material.DefaultProperties():
+        if prop in materialProps and prop != 'color':
+            aMaterial[prop] = float(materialProps[prop])
+        elif prop in materialProps and prop == 'color':
+            result = parse('({r:g}, {g:g}, {b:g})', materialProps[prop])
+            aMaterial[prop] = Color( result['r'], result['g'], result['b'] )
+        else:
+            aMaterial[prop] = Material.DefaultProperties()[prop]
+    return Material(color=aMaterial['color'], ambient=aMaterial['ambient'], diffuse=aMaterial['diffuse'], specular=aMaterial['specular'], shininess=aMaterial['shininess'])
+
+def buildTransforms( transforms ):
+    transformParse = compile('{transform:w}({x:g}, {y:g}, {z:g})')
+    finalTransform = IdentityMatrix
+    for transform in transforms:
+        result = transformParse.parse(transform)
+        if result['transform'] == 'scaling':
+            finalTransform = finalTransform * Scaling( result['x'], result['y'], result['z'] )
+    return finalTransform
+
+def buildSphereWithProps(sphereProps):
+    materialProps = {}
+    transforms    = []
+    for sphereProp in sphereProps:
+        embeddedProps = sphereProp.split('.')
+        if len(embeddedProps) > 1 and embeddedProps[0] == 'material':
+            materialProps[embeddedProps[1]] = sphereProps[sphereProp]
+        if len(embeddedProps) == 1 and embeddedProps[0] == 'transform':
+            transforms += [ sphereProps[sphereProp] ]
+    material = buildMaterial( materialProps )
+    transform = buildTransforms( transforms )
+    #print(material, transform)
+    return Sphere( transform, material )
+
+def buildSphereWithTable(context):
+    sphereProps = {}
+    (key,value) = context.table.headings
+    sphereProps[key] = value
+    for row in context.table:
+        (key,value) = row
+        sphereProps[key] = value
+    return buildSphereWithProps(sphereProps)
+
+@given(u'{spherevar} ← sphere() with')
+def step_impl(context, spherevar):
+    print(u'STEP: Given {} ← sphere() with'.format(spherevar))
+    if 'result' not in context:
+        context.result = {}
+    context.result[spherevar] = buildSphereWithTable(context)
