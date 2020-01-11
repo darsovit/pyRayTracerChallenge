@@ -7,50 +7,50 @@ from renderer.bolts import Tuple
 
 class Matrix:
     def __init__(self,rows,cols,data):
-        self.data = data
-        assert len(self.data) == rows, 'Expected num rows {} not equal to num rows {}'.format(rows,len(self.data))
-        for i in range(len(self.data)):
-            assert len(self.data[i]) == cols, 'Expected size of cols {} is not equal to size of cols {}'.format(cols,len(self.data[0]))
+        self.__data = data
+        assert len(self.__data) == rows, 'Expected num rows {} not equal to num rows {}'.format(rows,len(self.data))
+        for i in range(len(self.__data)):
+            assert len(self.__data[i]) == cols, 'Expected size of cols {} is not equal to size of cols {}'.format(cols,len(self.data[0]))
 
     def __str__(self):
-        return '\n'.join(list(map(str, self.data)))
+        return '\n'.join(list(map(str, self.__data)))
 
     def __getitem__(self,pos):
-        return self.data[pos[0]][pos[1]]
+        return self.__data[pos[0]][pos[1]]
 
     def Compare(self, rhs):
         EPSILON = 0.00001
-        if len(rhs.data) != len(self.data):
+        if len(rhs.__data) != len(self.__data):
             return False
-        for i in range(len(self.data)):
-            if len(self.data[i]) != len(rhs.data[i]):
+        for i in range(len(self.__data)):
+            if len(self.__data[i]) != len(rhs.__data[i]):
                 return False
-            for j in range(len(self.data[i])):
-                if not isclose(self.data[i][j], rhs.data[i][j], abs_tol=EPSILON):
+            for j in range(len(self.__data[i])):
+                if not isclose(self.__data[i][j], rhs.__data[i][j], abs_tol=EPSILON):
                     return False
         return True
 
 
     def __eq__(self,rhs):
-        if len(rhs.data) != len(self.data):
+        if len(rhs.__data) != len(self.__data):
             return False
-        for i in range(len(self.data)):
-            if len(self.data[i]) != len(rhs.data[i]):
+        for i in range(len(self.__data)):
+            if len(self.__data[i]) != len(rhs.__data[i]):
                 return False
-            for j in range(len(self.data[i])):
-                if not isclose(self.data[i][j], rhs.data[i][j]):
+            for j in range(len(self.__data[i])):
+                if not isclose(self.__data[i][j], rhs.__data[i][j]):
                     return False
         return True
 
     def __mul__(self,rhs):
         vals = []
-        for x in range(len(rhs.data)):
+        for x in range(len(rhs.__data)):
             rowdata = []
-            for y in range(len(rhs.data[x])):
+            for y in range(len(rhs.__data[x])):
                 base = Tuple( self[x,0],self[x,1],self[x,2],self[x,3] )
                 rowdata += [base.dot( Tuple(rhs[0,y],rhs[1,y],rhs[2,y],rhs[3,y]) )]
             vals += [rowdata]
-        return Matrix(len(rhs.data),len(rhs.data[0]),vals)
+        return Matrix(len(rhs.__data),len(rhs.__data[0]),vals)
 
     def TimesTuple(self,tuple):
         tupleMatrixData = []
@@ -60,7 +60,7 @@ class Matrix:
         tupleMatrix = Matrix(len(tuple.val),1,tupleMatrixData)
         resultMatrix = self * tupleMatrix
         resultTupleData = []
-        for i in range(len(resultMatrix.data)):
+        for i in range(len(resultMatrix.__data)):
             resultTupleData += [ resultMatrix[i,0] ]
         w = 0
         z = 0
@@ -78,9 +78,9 @@ class Matrix:
 
     def Transpose(self):
         newMatrixData = []
-        rows = len(self.data)
+        rows = len(self.__data)
         assert rows > 0
-        cols = len(self.data[0])
+        cols = len(self.__data[0])
         assert cols > 0
         for j in range(cols):
             newMatrixData += [[]]
@@ -91,20 +91,20 @@ class Matrix:
         
     def Determinant(self):
         det = 0
-        if len(self.data) == 2 and len(self.data[0]) == 2:
+        if len(self.__data) == 2 and len(self.__data[0]) == 2:
             det = self[0,0]*self[1,1] - self[1,0]*self[0,1]
         else:
-            for i in range(len(self.data)):
+            for i in range(len(self.__data)):
                 det += self[0,i] * self.Cofactor(0,i)
         return det
 
     def Submatrix(self, row, column):
         newMatrixData = []
-        for i in range(len(self.data)):
+        for i in range(len(self.__data)):
             if row == i:
                 continue
             rowData = []
-            for j in range(len(self.data[i])):
+            for j in range(len(self.__data[i])):
                 if column == j:
                     continue
                 rowData += [ self[i,j] ]
@@ -127,9 +127,9 @@ class Matrix:
         if 0 == determinant:
             raise NotInvertibleError
         newMatrixData = []
-        rows = len(self.data)
+        rows = len(self.__data)
         assert rows > 0
-        cols = len(self.data[0])
+        cols = len(self.__data[0])
         assert cols > 0
         for j in range(cols):
             newMatrixData += [[]]
