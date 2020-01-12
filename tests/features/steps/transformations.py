@@ -3,15 +3,20 @@
 # transformations steps
 
 from behave import given, then
-from renderer.transformations import Translation, Scaling, Rotation_x, Rotation_y, Rotation_z, Shearing
+from renderer.transformations import Translation, Scaling, Rotation_x, Rotation_y, Rotation_z, Shearing, ViewTransform
 from renderer.bolts import Point,Vector
 from math import sqrt, pi
+from renderer.matrix import IdentityMatrix
+
+def SetupContext(context):
+    if 'result' not in context:
+        context.result = {}
+        context.result['identity_matrix'] = IdentityMatrix
 
 @given(u'{var:w} ← translation({x:g}, {y:g}, {z:g})')
 def step_impl(context, var, x, y, z):
     print(u'STEP: Given {} ← translation({}, {}, {})'.format(var, x, y, z))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var] = Translation( x, y, z )
 
 
@@ -37,8 +42,7 @@ def step_impl(context):
 @given(u'{var:w} ← scaling({x:g}, {y:g}, {z:g})')
 def step_impl(context, var, x, y, z):
     print(u'STEP: Given {} ← scaling({}, {}, {})'.format(var, x, y, z))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var] = Scaling( x, y, z )
 
 @then(u'{var:w} * {vectorvar:w} = vector({x:g}, {y:g}, {z:g})')
@@ -53,8 +57,7 @@ def step_impl(context,var,vectorvar,x,y,z):
 @given(u'{var:w} ← rotation_x(π / {pi_divider:g})')
 def step_impl(context, var, pi_divider):
     print(u'STEP: Given {} ← rotation_x(π / {})'.format(var, pi_divider))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var] = Rotation_x( pi / pi_divider )
 
 @then(u'{transformvar:w} * {pointvar:w} = point(0, √2/2, √2/2)')
@@ -78,8 +81,7 @@ def step_impl(context, transformvar, pointvar):
 @given(u'{var:w} ← rotation_y(π / {pi_divider:g})')
 def step_impl(context, var, pi_divider):
     print(u'STEP: Given {} ← rotation_y(π / {})'.format(var, pi_divider))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var] = Rotation_y( pi / pi_divider )
 
 @then(u'{transformvar:w} * {pointvar:w} = point(√2/2, 0, √2/2)')
@@ -94,8 +96,7 @@ def step_impl(context, transformvar, pointvar):
 @given(u'{var:w} ← rotation_z(π / {pi_divider:g})')
 def step_impl(context, var, pi_divider):
     print(u'STEP: Given {} ← rotation_z(π / {})'.format(var, pi_divider))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var] = Rotation_z( pi / pi_divider )
 
 @then(u'{transformvar:w} * {pointvar:w} = point(-√2/2, √2/2, 0)')
@@ -110,8 +111,7 @@ def step_impl(context, transformvar, pointvar):
 @given(u'{var:w} ← shearing({x_y:g}, {x_z:g}, {y_x:g}, {y_z:g}, {z_x:g}, {z_y:g})')
 def step_impl(context, var, x_y, x_z, y_x, y_z, z_x, z_y):
     print(u'STEP: Given {} ← shearing({}, {}, {}, {}, {}, {})'.format(var, x_y, x_z, y_x, y_z, z_x, z_y))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var] = Shearing(x_y, x_z, y_x, y_z, z_x, z_y)
 
 def ApplyTransform( context, transformvar, pointvar, resultvar ):
@@ -146,3 +146,29 @@ def step_impl(context):
     assert 'B' in context.result
     assert 'A' in context.result
     context.result['T'] = context.result['C'] * context.result['B'] * context.result['A']
+
+@when(u'{transformvar:w} ← view_transform({fromvar:w}, {tovar:w}, {upvar:w})')
+def step_impl(context, transformvar, fromvar, tovar, upvar):
+    print(u'STEP: When {} ← view_transform({}, {}, {})'.format(transformvar, fromvar, tovar, upvar))
+    assert fromvar in context.result
+    assert tovar   in context.result
+    assert upvar   in context.result
+    context.result[transformvar] = ViewTransform(context.result[fromvar], context.result[tovar], context.result[upvar])
+
+
+@then(u'{transformvar:w} = scaling({x:g}, {y:g}, {z:g})')
+def step_impl(context, transformvar, x, y, z):
+    print(u'STEP: Then {} = scaling({}, {}, {})'.format(transformvar, x, y, z) )
+    assert transformvar in context.result
+    expected = Scaling( x, y, z )
+    result   = context.result[transformvar]
+    assert expected == result, 'Expected transform {} to be equal to scaling({}, {}, {}) matrix {}, found it as {}'.format(transformvar, x, y, z, expected, result)
+
+
+@then(u'{transformvar:w} = translation({x:g}, {y:g}, {z:g})')
+def step_impl(context, transformvar, x, y, z):
+    print(u'STEP: Then {} = translation({}, {}, {})'.format(transformvar, x, y, z))
+    assert transformvar in context.result
+    expected = Translation(x, y, z)
+    result   = context.result[transformvar]
+    assert expected == result, 'Expected transform {} to be equal to translation({}, {}, {})=matrix {}, found it as {}'.format(transformvar, x, y, z, expected, result)

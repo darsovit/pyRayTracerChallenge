@@ -3,6 +3,12 @@
 from behave import given, then
 from renderer.bolts import Tuple, Point, Vector, Color
 from math import isclose, sqrt
+from renderer.matrix import IdentityMatrix
+
+def SetupContext(context):
+    if 'result' not in context:
+        context.result = {}
+        context.result['identity_matrix'] = IdentityMatrix
 
 EPSILON = 0.0001
 
@@ -28,8 +34,7 @@ def determineNumeric(stringval):
 @given(u'{var:w} ← tuple({x:g}, {y:g}, {z:g}, {w:g})')
 def step_impl(context, var, x, y, z, w):
     print(u'STEP: {} ← tuple({}, {}, {}, {})'.format(var, x, y, z, w))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var] = Tuple(x,y,z,w)
     pass
 
@@ -81,8 +86,7 @@ def step_impl(context, var):
 @given(u'{var:w} ← point({x:g}, {y:g}, {z:g})')
 def step_impl(context, var, x, y, z):
     print(u'STEP: {} ← point({}, {}, {})'.format(var, x, y, z))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var] = Point(x,y,z)
     pass
 
@@ -193,8 +197,7 @@ def step_impl(context,var1,var2,x,y,z):
 @given(u'{var1:w} ← color({red:g}, {green:g}, {blue:g})')
 def step_impl(context, var1, red, green, blue):
     print(u'STEP: {} ← color({}, {}, {})'.format(var1,red,green,blue))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[var1] = Color(red,green,blue)
     pass
 
@@ -283,8 +286,7 @@ def step_impl(context, var1, var2):
 @given(u'{resultvar:w} ← vector({x:S}, {y:S}, {z:S})')
 def step_impl(context, resultvar, x, y, z):
     print(u'STEP: Given {} ← vector({}, {}, {})'.format(resultvar, x, y, z))
-    if 'result' not in context:
-        context.result = {}
+    SetupContext(context)
     context.result[resultvar] = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
 
 @then(u'{compsvar:w}.point = point({x:S}, {y:S}, {z:S})')

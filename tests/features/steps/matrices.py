@@ -197,7 +197,8 @@ def step_impl(context, matrixvar, rows, columns):
     print(u'STEP: Then {} is the following {}x{} matrix'.format(matrixvar, rows, columns))
     assert matrixvar in context.result
     expected = buildMatrixFromContextTable(context, rows, columns)
-    assert context.result[matrixvar].Compare(expected), 'Expected {} to be equal to the provided matrix'.format(matrixvar)
+    result   = context.result[matrixvar]
+    assert result.Compare(expected), 'Expected {} to be equal to the provided matrix: {}\nInstead it is: {}'.format(matrixvar, expected, result )
 
 
 @then(u'inverse({matrixvar:w}) is the following {rows:d}x{columns:d} matrix')
