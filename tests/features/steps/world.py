@@ -83,3 +83,35 @@ def step_impl(context, intersectionsvar, worldvar, rayvar):
     assert worldvar in context.result
     assert rayvar in context.result
     context.result[intersectionsvar] = context.result[worldvar].Intersects(context.result[rayvar])
+
+@given(u'{shapevar:w} ← the first object in {worldvar:w}')
+def step_impl(context, shapevar, worldvar):
+    print(u'STEP: Given {} ← the first object in {}'.format(shapevar, worldvar))
+    assert worldvar in context.result
+    context.result[shapevar] = context.result[worldvar].Objects()[0]
+
+@given(u'{shapevar:w} ← the second object in {worldvar:w}')
+def step_impl(context, shapevar, worldvar):
+    print(u'STEP: Given {} ← the second object in {}'.format(shapevar, worldvar))
+    assert worldvar in context.result
+    context.result[shapevar] = context.result[worldvar].Objects()[1]
+    
+@when(u'{colorvar:w} ← shade_hit({worldvar:w}, {compsvar:w})')
+def step_impl(context, colorvar, worldvar, compsvar):
+    print(u'STEP: When {} ← shade_hit({}, {})'.format(colorvar, worldvar, compsvar))
+    assert worldvar in context.result
+    assert compsvar in context.result
+    context.result[colorvar] = context.result[worldvar].ShadeHit( context.result[compsvar] )
+
+@given(u'{worldvar:w}.light ← point_light(point({pointx:g}, {pointy:g}, {pointz:g}), color({r:g}, {g:g}, {b:g}))')
+def step_impl(context, worldvar, pointx, pointy, pointz, r, g, b):
+    print(u'STEP: Given {}.light ← point_light(point({}, {}, {}), color({}, {}, {}))'.format(worldvar, pointx, pointy, pointz, r, g, b))
+    assert worldvar in context.result
+    context.result[worldvar].SetLight( PointLight( Point(pointx, pointy, pointz), Color(r, g, b) ) )
+
+@when(u'{colorvar:w} ← color_at({worldvar:w}, {rayvar:w})')
+def step_impl(context, colorvar, worldvar, rayvar):
+    print(u'STEP: When {} ← color_at({}, {})'.format(colorvar, worldvar, rayvar))
+    assert worldvar in context.result
+    assert rayvar in context.result
+    context.result[colorvar] = context.result[worldvar].ColorAt( context.result[rayvar] )

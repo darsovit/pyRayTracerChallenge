@@ -177,3 +177,17 @@ def step_impl(context, spherevar):
     if 'result' not in context:
         context.result = {}
     context.result[spherevar] = buildSphereWithTable(context)
+
+@given(u'{objectvar:w}.material.ambient ← {ambientval:g}')
+def step_impl(context, objectvar, ambientval):
+    print(u'STEP: Given {}.material.ambient ← {}'.format(objectvar, ambientval))
+    assert objectvar in context.result
+    context.result[objectvar].Material().SetAmbient(ambientval)
+
+@then(u'{colorvar} = {objectvar}.material.color')
+def step_impl(context, colorvar, objectvar):
+    print(u'STEP: Then {} = {}.material.color'.format(colorvar, objectvar))
+    assert objectvar in context.result
+    expected = context.result[objectvar].Material().Color()
+    result   = context.result[colorvar]
+    assert expected.compare(result), 'Expected color {} to equal object {} material color {}, but it is instead {}'.format(colorvar, objectvar, expected, result)
