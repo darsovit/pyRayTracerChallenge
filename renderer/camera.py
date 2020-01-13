@@ -35,6 +35,12 @@ class Camera:
         return self.__transform
     def SetTransform(self, transform):
         self.__transform = transform
+        self.__transformInverse = transform.Inverse()
+        self.__origin           = self.__transformInverse.TimesTuple( Point(0, 0, 0) )
+    def TransformInverse(self):
+        return self.__transformInverse
+    def Origin(self):
+        return self.__origin
 
     def GetPixelSize(self):
         return self.__pixelSize
@@ -44,12 +50,10 @@ class Camera:
         yoffset = (y + 0.5) * self.GetPixelSize()
         world_x = self.__halfWidth - xoffset
         world_y = self.__halfHeight - yoffset
-        transformInverse = self.Transform().Inverse()
-        pixel = transformInverse.TimesTuple( Point(world_x, world_y, -1) )
-        origin = transformInverse.TimesTuple( Point(0, 0, 0) )
-        direction = (pixel - origin).normalize()
+        pixel = self.TransformInverse().TimesTuple( Point(world_x, world_y, -1) )
+        direction = (pixel - self.Origin()).normalize()
         directionV = Vector( direction[0], direction[1], direction[2] )
-        return Ray(origin, directionV)
+        return Ray(self.Origin(), directionV)
 
     def Render(self, world):
         canvas = Canvas( self.HSize(), self.VSize() )
