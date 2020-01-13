@@ -2,39 +2,38 @@
 
 from behave import given, then
 from renderer.bolts import Tuple, Point, Vector, Color
-from math import isclose, sqrt
+from math import isclose, sqrt, pi
 from renderer.matrix import IdentityMatrix
-
-def SetupContext(context):
-    if 'result' not in context:
-        context.result = {}
-        context.result['identity_matrix'] = IdentityMatrix
 
 EPSILON = 0.0001
 
+#def determineValue(stringval):
+#    if stringval == 'π':
+#        return pi
+#    else:
+#        return float(stringval)
 
-def determineNumeric(stringval):
-    fractional = stringval.split('/')
-    assert len(fractional) < 3
-    denominator = 1
-    numerator   = 1
-    if len(fractional) == 2:
-        denominator = float(fractional[1])
-    sqrtsplit = fractional[0].split('√')
-    assert len(sqrtsplit) < 3
-    if len(sqrtsplit) == 2:
-        numerator *= sqrt(float(sqrtsplit[1]))
-    if len(sqrtsplit[0]) > 0:
-        if len(sqrtsplit[0]) == 1 and sqrtsplit[0][0] == '-':
-            numerator *= -1
-        else:
-            numerator *= float(sqrtsplit[0])
-    return numerator / denominator
+#def determineNumeric(stringval):
+#    fractional = stringval.split('/')
+#    assert len(fractional) < 3
+#    denominator = 1
+#    numerator   = 1
+#    if len(fractional) == 2:
+#        denominator = determineValue(fractional[1])
+#    sqrtsplit = fractional[0].split('√')
+#    assert len(sqrtsplit) < 3
+#    if len(sqrtsplit) == 2:
+#        numerator *= sqrt(determineValue(sqrtsplit[1]))
+#    if len(sqrtsplit[0]) > 0:
+#        if len(sqrtsplit[0]) == 1 and sqrtsplit[0][0] == '-':
+#            numerator *= -1
+#        else:
+#            numerator *= determineValue(sqrtsplit[0])
+#    return numerator / denominator
 
 @given(u'{var:w} ← tuple({x:g}, {y:g}, {z:g}, {w:g})')
 def step_impl(context, var, x, y, z, w):
     print(u'STEP: {} ← tuple({}, {}, {}, {})'.format(var, x, y, z, w))
-    SetupContext(context)
     context.result[var] = Tuple(x,y,z,w)
     pass
 
@@ -86,7 +85,7 @@ def step_impl(context, var):
 @given(u'{var:w} ← point({x:g}, {y:g}, {z:g})')
 def step_impl(context, var, x, y, z):
     print(u'STEP: {} ← point({}, {}, {})'.format(var, x, y, z))
-    SetupContext(context)
+    #SetupContext(context)
     context.result[var] = Point(x,y,z)
     pass
 
@@ -153,7 +152,7 @@ def step_impl(context, var1, var2, x, y, z):
 @then(u'magnitude({var1:w}) = {val:S}')
 def step_impl(context, var1, val):
     print(u'STEP: magnitude({}) = {}'.format(var1,val))
-    expected = determineNumeric(val)
+    expected = context.helpers['determineNumeric'](val)
     result = context.result[var1].magnitude()
     assert isclose(expected, result), 'Expected {} = magnitude({}) = {}'.format(expected, var1, result)
 
@@ -197,7 +196,7 @@ def step_impl(context,var1,var2,x,y,z):
 @given(u'{var1:w} ← color({red:g}, {green:g}, {blue:g})')
 def step_impl(context, var1, red, green, blue):
     print(u'STEP: {} ← color({}, {}, {})'.format(var1,red,green,blue))
-    SetupContext(context)
+    #SetupContext(context)
     context.result[var1] = Color(red,green,blue)
     pass
 
@@ -269,7 +268,7 @@ def step_impl(context, result, vectorvar, normalvar):
 def step_impl(context, var, x, y, z):
     print(u'STEP: Then {} = vector({}, {}, {})'.format(var, x, y, z))
     assert var in context.result
-    expected = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    expected = Vector( context.helpers['determineNumeric'](x), context.helpers['determineNumeric'](y), context.helpers['determineNumeric'](z) )
     result   = context.result[var]
     assert expected.compare(result), 'Expected {} to be {}, but found it is {}'.format(var, expected, result)
 
@@ -286,14 +285,14 @@ def step_impl(context, var1, var2):
 @given(u'{resultvar:w} ← vector({x:S}, {y:S}, {z:S})')
 def step_impl(context, resultvar, x, y, z):
     print(u'STEP: Given {} ← vector({}, {}, {})'.format(resultvar, x, y, z))
-    SetupContext(context)
-    context.result[resultvar] = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    #SetupContext(context)
+    context.result[resultvar] = Vector( context.helpers['determineNumeric'](x), context.helpers['determineNumeric'](y), context.helpers['determineNumeric'](z) )
 
 @then(u'{compsvar:w}.point = point({x:S}, {y:S}, {z:S})')
 def step_impl(context, compsvar, x, y, z):
     print(u'STEP: Then {}.point = point({}, {}, {})'.format(compsvar, x, y, z))
     assert compsvar in context.result
-    expected = Point( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    expected = Point( context.helpers['determineNumeric'](x), context.helpers['determineNumeric'](y), context.helpers['determineNumeric'](z) )
     result   = context.result[compsvar]['point']
     assert expected.compare(result), 'Expected computation {} point is {}, found it as {}'.format(compsvar, expected, result)
 
@@ -302,7 +301,7 @@ def step_impl(context, compsvar, x, y, z):
 def step_impl(context, compsvar, x, y, z):
     print(u'STEP: Then {}.eyev = vector({}, {}, {})'.format(compsvar, x, y, z))
     assert compsvar in context.result
-    expected = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    expected = Vector( context.helpers['determineNumeric'](x), context.helpers['determineNumeric'](y), context.helpers['determineNumeric'](z) )
     result   = context.result[compsvar]['eyev']
     assert expected.compare(result), 'Expected computation {} eyev is {}, found it is {}'.format( compsvar, expected, result )
 
@@ -311,6 +310,27 @@ def step_impl(context, compsvar, x, y, z):
 def step_impl(context, compsvar, x, y, z):
     print(u'STEP: Then {}.normalv = vector({}, {}, {})'.format(compsvar, x, y, z))
     assert compsvar in context.result
-    expected = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    expected = Vector( context.helpers['determineNumeric'](x), context.helpers['determineNumeric'](y), context.helpers['determineNumeric'](z) )
     result = context.result[compsvar]['normalv']
     assert expected.compare(result), 'Expected computation {} normalv is {}, found it is {}'.format( compsvar, expected, result )
+
+@given(u'{var:w} ← {val:g}')
+def step_impl(context, var, val):
+    print(u'STEP: Given {} ← {}'.format(var, val))
+    #SetupContext(context)
+    context.result[var] = val
+
+
+@then(u'{cameravar}.field_of_view = {val:S}')
+def step_impl(context, cameravar, val):
+    print(u'STEP: Then {}.field_of_view = {}'.format(cameravar, val))
+    assert cameravar in context.result
+    expected = context.helpers['determineNumeric'](val)
+    result   = context.result[cameravar].GetFieldOfView()
+    assert isclose(expected, result), 'Expected Camera {} field of view {} to be equal to expected {}, it is not'.format(cameravar, result, expected)
+
+
+@given(u'{var:w} ← π/{denom:g}')
+def step_impl(context, var, denom):
+    print(u'STEP: Given {} ← π/{}'.format(var, denom))
+    context.result[var] = pi / denom

@@ -23,8 +23,6 @@ def buildMatrixFromContextTable(context,rows=None,cols=None):
 @given(u'the following {rows:d}x{cols:d} matrix {matrixvar:w}')
 def step_impl(context, rows, cols, matrixvar):
     print(u'STEP: Given the following {}x{} matrix {}'.format(rows,cols,matrixvar))
-    if 'result' not in context:
-        context.result = {}
     context.result[matrixvar] = buildMatrixFromContextTable(context,rows,cols)
     pass
 
@@ -40,8 +38,6 @@ def step_impl(context,matrixvar,row,col,expected):
 @given(u'the following matrix {matrixvar:w}')
 def step_impl(context,matrixvar):
     print(u'STEP: Given the following matrix {}'.format(matrixvar))
-    if 'result' not in context:
-        context.result = {}
     context.result[matrixvar] = buildMatrixFromContextTable(context)
     pass
 
@@ -139,10 +135,6 @@ def step_impl(context,matrixvar):
 @given(u'{matrixvar:w} ← transpose(identity_matrix)')
 def step_impl(context, matrixvar):
     print(u'STEP: Given {} ← transpose(identity_matrix)'.format(matrixvar))
-    if 'result' not in context:
-        context.result = {}
-    # placing the identity_matrix into the context.result will ensure that if compared against it is available
-    context.result['identity_matrix'] = IdentityMatrix
     context.result[matrixvar] = IdentityMatrix.Transpose()
 
 

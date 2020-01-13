@@ -13,8 +13,6 @@ from renderer.bolts import Color, Point
 @given(u'{worldvar:w} ← world()')
 def step_impl(context, worldvar):
     print(u'STEP: Given {} ← world()'.format(worldvar))
-    if 'result' not in context:
-        context.result = {}
     context.result[worldvar] = World()
 
 
@@ -43,8 +41,6 @@ def BuildDefaultWorld():
 @when(u'{worldvar:w} ← default_world()')
 def step_impl(context, worldvar):
     print(u'STEP: When {} ← default_world()'.format(worldvar))
-    if 'result' not in context:
-        context.result = {}
     context.result[worldvar] = BuildDefaultWorld()
 
 @given(u'{worldvar:w} ← default_world()')
@@ -73,8 +69,6 @@ def step_impl(context, worldvar, objectvar):
     for anObject in context.result[worldvar].Objects():
         if anObject == context.result[objectvar]:
             foundMatchingObject = True
-        #else:
-        #    print( 'No match:\n\t{}\n\t{}'.format( anObject, context.result[objectvar] ) )
     assert foundMatchingObject, 'Expected to find matching object {} in world {} among {} objects'.format(objectvar, worldvar, context.result[worldvar].NumObjects())
 
 @when(u'{intersectionsvar:w} ← intersect_world({worldvar:w}, {rayvar:w})')

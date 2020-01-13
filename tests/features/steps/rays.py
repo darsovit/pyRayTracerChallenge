@@ -31,8 +31,6 @@ def step_impl(context, rayvar, directionvar):
 @given(u'{rayvar:w} ← ray(point({pointx:g}, {pointy:g}, {pointz:g}), vector({vecx:g}, {vecy:g}, {vecz:g}))')
 def step_impl(context, rayvar, pointx, pointy, pointz, vecx, vecy, vecz):
     print(u'STEP: Given r ← ray(point(2, 3, 4), vector(1, 0, 0))'.format(rayvar, pointx, pointy, pointz, vecx, vecy, vecz))
-    if 'result' not in context:
-        context.result = {}
     context.result[rayvar] = Ray(Point(pointx, pointy, pointz), Vector(vecx, vecy, vecz))
 
 @then(u'position({rayvar:w}, {time:g}) = point({pointx:g}, {pointy:g}, {pointz:g})')

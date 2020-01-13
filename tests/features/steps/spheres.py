@@ -15,9 +15,6 @@ from parse import compile
 @given(u'{spherevar:w} ← sphere()')
 def step_impl(context, spherevar):
     print(u'STEP: Given s ← sphere()'.format(spherevar))
-    if 'result' not in context:
-        context.result = {}
-        context.result['identity_matrix'] = IdentityMatrix
     context.result[spherevar] = Sphere()
     pass
 
@@ -72,11 +69,11 @@ def step_impl(context, resultvar, objectvar, x, y, z):
     assert objectvar in context.result
     context.result[resultvar] = context.result[objectvar].Normal( Point(x, y, z) )
 
-@when(u'{resultvar:w} ← normal_at({objectvar:w}, point(√{xsqrt:d}/{xdenom:d}, √{ysqrt:d}/{ydenom:d}, √{zsqrt:d}/{zdenom:d}))')
-def step_impl(context, resultvar, objectvar, xsqrt, xdenom, ysqrt, ydenom, zsqrt, zdenom):
-    print(u'STEP: When n ← normal_at({}, point(√3/3, √3/3, √3/3))'.format(resultvar, objectvar, xsqrt, xdenom, ysqrt, ydenom, zsqrt, zdenom))
+@when(u'{resultvar:w} ← normal_at({objectvar:w}, point({x:S}, {y:S}, {z:S}))')
+def step_impl(context, resultvar, objectvar, x, y, z):
+    print(u'STEP: When n ← normal_at({}, point({}, {}, {}))'.format(resultvar, objectvar, x, y, z))
     assert objectvar in context.result
-    context.result[resultvar] = context.result[objectvar].Normal( Point( sqrt(xsqrt)/xdenom, sqrt(ysqrt)/ydenom, sqrt(zsqrt)/zdenom ) )
+    context.result[resultvar] = context.result[objectvar].Normal( Point( context.helpers['determineNumeric'](x), context.helpers['determineNumeric'](y), context.helpers['determineNumeric'](z) ) )
 
 @given(u'set_transform({objectvar:w}, translation({x:g}, {y:g}, {z:g}))')
 def step_impl(context, objectvar, x, y, z):
@@ -87,8 +84,6 @@ def step_impl(context, objectvar, x, y, z):
 @given(u'{resultvar:w} ← scaling({scalex:g}, {scaley:g}, {scalez:g}) * rotation_z(π/{rotatez_pi_divider:g})')
 def step_impl(context, resultvar, scalex, scaley, scalez, rotatez_pi_divider):
     print(u'STEP: Given {} ← scaling({}, {}, {}) * rotation_z(π/{})'.format(resultvar, scalex, scaley, scalez, rotatez_pi_divider))
-    if 'result' not in context:
-        context.result = {}
     context.result[resultvar] = IdentityMatrix * Scaling(scalex, scaley, scalez) * Rotation_z( pi / rotatez_pi_divider )
 
 
@@ -99,11 +94,6 @@ def step_impl(context, objectvar, transformvar):
     context.result[objectvar].SetTransform( context.result[transformvar] )
 
 
-@when(u'{resultvar:w} ← normal_at({objectvar:w}, point({x:g}, √{ysqrt:d}/{ydenom:d}, -√{zsqrt:d}/{zdenom:d}))')
-def step_impl(context, resultvar, objectvar, x, ysqrt, ydenom, zsqrt, zdenom):
-    print(u'STEP: When {} ← normal_at({}, point({}, √{}/{}, -√{}/{}))'.format(resultvar, objectvar, x, ysqrt, ydenom, zsqrt, zdenom))
-    assert objectvar in context.result
-    context.result[resultvar] = context.result[objectvar].Normal( Point(x, sqrt(ysqrt)/ydenom, -(sqrt(zsqrt))/zdenom) )
 
 @when(u'{result} ← {spherevar}.material')
 def step_impl(context, result, spherevar):
@@ -174,8 +164,6 @@ def buildSphereWithTable(context):
 @given(u'{spherevar} ← sphere() with')
 def step_impl(context, spherevar):
     print(u'STEP: Given {} ← sphere() with'.format(spherevar))
-    if 'result' not in context:
-        context.result = {}
     context.result[spherevar] = buildSphereWithTable(context)
 
 @given(u'{objectvar:w}.material.ambient ← {ambientval:g}')

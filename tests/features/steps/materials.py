@@ -11,8 +11,6 @@ from math import isclose
 @given(u'{materialvar:w} ← material()')
 def step_impl(context, materialvar):
     print(u'STEP: Given {} ← material()'.format(materialvar))
-    if 'result' not in context:
-        context.result = {}
     context.result[materialvar] = Material()
 
 @then(u'{materialvar}.color = color({r:g}, {g:g}, {b:g})')

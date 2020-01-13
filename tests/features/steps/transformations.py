@@ -8,15 +8,9 @@ from renderer.bolts import Point,Vector
 from math import sqrt, pi
 from renderer.matrix import IdentityMatrix
 
-def SetupContext(context):
-    if 'result' not in context:
-        context.result = {}
-        context.result['identity_matrix'] = IdentityMatrix
-
 @given(u'{var:w} ← translation({x:g}, {y:g}, {z:g})')
 def step_impl(context, var, x, y, z):
     print(u'STEP: Given {} ← translation({}, {}, {})'.format(var, x, y, z))
-    SetupContext(context)
     context.result[var] = Translation( x, y, z )
 
 
@@ -42,7 +36,6 @@ def step_impl(context):
 @given(u'{var:w} ← scaling({x:g}, {y:g}, {z:g})')
 def step_impl(context, var, x, y, z):
     print(u'STEP: Given {} ← scaling({}, {}, {})'.format(var, x, y, z))
-    SetupContext(context)
     context.result[var] = Scaling( x, y, z )
 
 @then(u'{var:w} * {vectorvar:w} = vector({x:g}, {y:g}, {z:g})')
@@ -57,31 +50,21 @@ def step_impl(context,var,vectorvar,x,y,z):
 @given(u'{var:w} ← rotation_x(π / {pi_divider:g})')
 def step_impl(context, var, pi_divider):
     print(u'STEP: Given {} ← rotation_x(π / {})'.format(var, pi_divider))
-    SetupContext(context)
     context.result[var] = Rotation_x( pi / pi_divider )
 
-@then(u'{transformvar:w} * {pointvar:w} = point(0, √2/2, √2/2)')
-def step_impl(context, transformvar, pointvar):
-    print(u'STEP: Then {} * {} = point(0, √2/2, √2/2)'.format(transformvar, pointvar))
+@then(u'{transformvar:w} * {pointvar:w} = point({x:S}, {y:S}, {z:S})')
+def step_impl(context, transformvar, pointvar, x, y, z):
+    print(u'STEP: Then {} * {} = point({}, {}, {})'.format(transformvar, pointvar, x, y, z))
     assert transformvar in context.result
     assert pointvar     in context.result
-    expected = Point(0, sqrt(2)/2, sqrt(2)/2)
+    expected = Point(context.helpers['determineNumeric'](x), context.helpers['determineNumeric'](y), context.helpers['determineNumeric'](z))
     result = context.result[transformvar].TimesTuple(context.result[pointvar])
     assert expected.compare(result), 'Expected transform {} against point {} would result in {}, but result was {}'.format(transformvar, pointvar, expected, result)
 
-@then(u'{transformvar:w} * {pointvar:w} = point(0, √2/2, -√2/2)')
-def step_impl(context, transformvar, pointvar):
-    print(u'STEP: Then {} * {} = point(0, √2/2, -√2/2)'.format(transformvar, pointvar))
-    assert transformvar in context.result
-    assert pointvar     in context.result
-    expected = Point(0, sqrt(2)/2, -(sqrt(2)/2))
-    result = context.result[transformvar].TimesTuple(context.result[pointvar])
-    assert expected.compare(result), 'Expected transform {} against point {} would result in {}, but result was {}'.format(transformvar, pointvar, expected, result)
 
 @given(u'{var:w} ← rotation_y(π / {pi_divider:g})')
 def step_impl(context, var, pi_divider):
     print(u'STEP: Given {} ← rotation_y(π / {})'.format(var, pi_divider))
-    SetupContext(context)
     context.result[var] = Rotation_y( pi / pi_divider )
 
 @then(u'{transformvar:w} * {pointvar:w} = point(√2/2, 0, √2/2)')
@@ -96,22 +79,12 @@ def step_impl(context, transformvar, pointvar):
 @given(u'{var:w} ← rotation_z(π / {pi_divider:g})')
 def step_impl(context, var, pi_divider):
     print(u'STEP: Given {} ← rotation_z(π / {})'.format(var, pi_divider))
-    SetupContext(context)
+    #SetupContext(context)
     context.result[var] = Rotation_z( pi / pi_divider )
-
-@then(u'{transformvar:w} * {pointvar:w} = point(-√2/2, √2/2, 0)')
-def step_impl(context, transformvar, pointvar):
-    print(u'STEP: Then {} * {} = point(-√2/2, √2/2, 0)'.format(transformvar, pointvar))
-    assert transformvar in context.result
-    assert pointvar     in context.result
-    expected = Point( -sqrt(2)/2, sqrt(2)/2, 0 )
-    result = context.result[transformvar].TimesTuple( context.result[pointvar] )
-    assert expected.compare(result), 'Expected transform {} against point {} would result in {}, but result was {}'.format(transformvar, pointvar, expected, result)
 
 @given(u'{var:w} ← shearing({x_y:g}, {x_z:g}, {y_x:g}, {y_z:g}, {z_x:g}, {z_y:g})')
 def step_impl(context, var, x_y, x_z, y_x, y_z, z_x, z_y):
     print(u'STEP: Given {} ← shearing({}, {}, {}, {}, {}, {})'.format(var, x_y, x_z, y_x, y_z, z_x, z_y))
-    SetupContext(context)
     context.result[var] = Shearing(x_y, x_z, y_x, y_z, z_x, z_y)
 
 def ApplyTransform( context, transformvar, pointvar, resultvar ):
