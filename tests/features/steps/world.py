@@ -109,3 +109,19 @@ def step_impl(context, colorvar, worldvar, rayvar):
     assert worldvar in context.result
     assert rayvar in context.result
     context.result[colorvar] = context.result[worldvar].ColorAt( context.result[rayvar] )
+
+@then(u'is_shadowed({worldvar:w}, {pointvar:w}) is {trueOrFalse:w}')
+def step_impl(context, worldvar, pointvar, trueOrFalse):
+    print(u'STEP: Then is_shadowed({}, {}) is {}'.format(worldvar, pointvar, trueOrFalse))
+    assert worldvar in context.result
+    assert pointvar in context.result
+    result = context.result[worldvar].IsShadowed( context.result[pointvar] )
+    expected = True if trueOrFalse == 'true' else False
+    assert result == expected, 'Expected is_shadowed({}, {}) = {}, not {}'.format(worldvar, pointvar, expected, result)
+
+@given(u'{objectvar:w} is added to {worldvar:w}')
+def step_impl(context, objectvar, worldvar):
+    print(u'STEP: Given {} is added to {}'.format(objectvar, worldvar))
+    assert objectvar in context.result
+    assert worldvar in context.result
+    context.result[worldvar].AddObject( context.result[objectvar] )

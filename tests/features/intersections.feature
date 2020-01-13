@@ -42,15 +42,15 @@ Scenario: The hit, when an intersection occurs on the inside
       # normal would have been (0, 0, 1), but is inverted!
     And comps.normalv = vector(0, 0, -1)
 
-#Scenario: The hit should offset the point
-#  Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
-#    And shape ← sphere() with:
-#      | transform | translation(0, 0, 1) |
-#    And i ← intersection(5, shape)
-#  When comps ← prepare_computations(i, r)
-#  Then comps.over_point.z < -EPSILON/2
-#    And comps.point.z > comps.over_point.z
-#
+Scenario: The hit should offset the point
+  Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    And shape ← sphere() with:
+      | transform | translation(0, 0, 1) |
+    And i ← intersection(5, shape)
+  When comps ← prepare_computations(i, r)
+  Then comps.over_point.z < -EPSILON/2
+    And comps.point.z > comps.over_point.z
+
 #Scenario: The under point is offset below the surface
 #  Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
 #    And shape ← glass_sphere() with:

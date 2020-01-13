@@ -334,3 +334,8 @@ def step_impl(context, cameravar, val):
 def step_impl(context, var, denom):
     print(u'STEP: Given {} ← π/{}'.format(var, denom))
     context.result[var] = pi / denom
+
+@given(u'{var:w} ← true')
+def step_impl(context, var):
+    print(u'STEP: Given {} ← true'.format(var))
+    context.result[var] = True

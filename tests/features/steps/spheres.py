@@ -136,6 +136,10 @@ def buildTransforms( transforms ):
         result = transformParse.parse(transform)
         if result['transform'] == 'scaling':
             finalTransform = finalTransform * Scaling( result['x'], result['y'], result['z'] )
+        elif result['transform'] == 'translation':
+            finalTransform = finalTransform * Translation( result['x'], result['y'], result['z'] )
+        else:
+            assert False, 'Unhandled transform: {}'.format(transform)
     return finalTransform
 
 def buildSphereWithProps(sphereProps):

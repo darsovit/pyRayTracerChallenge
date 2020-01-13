@@ -66,11 +66,21 @@ def step_impl(context, materialvar, ambientval):
 
 @when(u'{resultvar:w} ← lighting({materialvar:w}, {lightvar:w}, {positionvar:w}, {eyevar:w}, {normalvar:w})')
 def step_impl(context, resultvar, materialvar, lightvar, positionvar, eyevar, normalvar):
-    print(u'STEP: When {} ← lighting(m, light, position, eyev, normalv)'.format(resultvar, materialvar, lightvar, positionvar, eyevar, normalvar))
+    print(u'STEP: When {} ← lighting({}, {}, {}, {}, {})'.format(resultvar, materialvar, lightvar, positionvar, eyevar, normalvar))
     assert materialvar in context.result
     assert lightvar in context.result
     assert positionvar in context.result
     assert eyevar in context.result
     assert normalvar in context.result
-    context.result[resultvar] = context.result[materialvar].Lighting( context.result[lightvar], context.result[positionvar], context.result[eyevar], context.result[normalvar] )
+    context.result[resultvar] = context.result[materialvar].Lighting( context.result[lightvar], context.result[positionvar], context.result[eyevar], context.result[normalvar], False )
 
+@when(u'{resultvar:w} ← lighting({materialvar:w}, {lightvar:w}, {positionvar:w}, {eyevar:w}, {normalvar:w}, {shadowvar:w})')
+def step_impl(context, resultvar, materialvar, lightvar, positionvar, eyevar, normalvar, shadowvar):
+    print(u'STEP: When {} ← lighting({}, {}, {}, {}, {}, {})'.format(resultvar, materialvar, lightvar, positionvar, eyevar, normalvar, shadowvar))
+    assert materialvar in context.result
+    assert lightvar in context.result
+    assert positionvar in context.result
+    assert eyevar in context.result
+    assert normalvar in context.result
+    assert shadowvar in context.result
+    context.result[resultvar] = context.result[materialvar].Lighting( context.result[lightvar], context.result[positionvar], context.result[eyevar], context.result[normalvar], context.result[shadowvar] )

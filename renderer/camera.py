@@ -22,7 +22,8 @@ class Camera:
             self.__halfHeight = halfView
             self.__halfWidth  = halfView * aspect
         self.__pixelSize = (2*self.__halfWidth) / hsize
-        self.__transform = IdentityMatrix
+        self.SetTransform(IdentityMatrix)
+        
 
     def HSize(self):
         return self.__hsize

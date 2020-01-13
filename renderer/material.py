@@ -54,9 +54,12 @@ class Material:
             , 'Specular:', self.Specular()
             , 'Shininess:', self.Shininess() ])))
 
-    def Lighting(self, light, position, eyev, normalv):
+    def Lighting(self, light, position, eyev, normalv, inShadow):
         effectiveColor = self.Color().multiply( light.Intensity() )
         ambientColor = effectiveColor * self.Ambient()
+        if inShadow:
+            return Color( ambientColor[0], ambientColor[1], ambientColor[2] )
+        # If not in shadow, need to combine the following
         black = Color(0,0,0)
         diffuseColor = black
         specularColor = black

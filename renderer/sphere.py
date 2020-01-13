@@ -4,13 +4,13 @@
 
 from renderer.matrix import IdentityMatrix
 from math import sqrt
-from renderer.bolts import Point, Vector
+from renderer.bolts import Point, Vector, EPSILON
 from renderer.material import Material
 
 class Sphere:
     
     def __init__(self, transform=IdentityMatrix, material=Material()):
-        self.__transform = transform
+        self.SetTransform(transform)
         self.__material  = material
 
     def Intersect(self, ray):
@@ -28,14 +28,20 @@ class Sphere:
 
     def Transform(self):
         return self.__transform
+    def TransformInverse(self):
+        return self.__transformInverse
+    def TransformInverseTranspose(self):
+        return self.__transformInverseTranspose
 
     def SetTransform(self, transform):
         self.__transform = transform
+        self.__transformInverse = transform.Inverse()
+        self.__transformInverseTranspose = self.__transformInverse.Transpose()
 
     def Normal(self, position):
-        object_point = self.Transform().Inverse().TimesTuple(position)
+        object_point = self.TransformInverse().TimesTuple(position)
         object_normal = object_point - Point(0,0,0)
-        world_normal  = self.Transform().Inverse().Transpose().TimesTuple(object_normal)
+        world_normal  = self.TransformInverseTranspose().TimesTuple(object_normal)
         world_normal  = Vector( world_normal[0], world_normal[1], world_normal[2] )
         return world_normal.normalize()
 
@@ -49,6 +55,7 @@ class Sphere:
         computations['inside'] = 0 > computations['normalv'].dot(computations['eyev'])
         if computations['inside']:
             computations['normalv'] = -computations['normalv']
+        computations['over_point'] = computations['point'] + computations['normalv'] * EPSILON
         return computations
 
     def Material(self):

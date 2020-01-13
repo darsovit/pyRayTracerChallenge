@@ -2,7 +2,7 @@
 #
 #
 from behave import given,then,when
-from renderer.bolts import IdentifyHit
+from renderer.bolts import IdentifyHit, EPSILON
 
 @when(u'{intersectionvar:w} ← intersection({time:g}, {objectvar:w})')
 def step_impl(context, intersectionvar, time, objectvar):
@@ -134,3 +134,20 @@ def step_impl(context, compsvar):
     assert compsvar in context.result
     result = context.result[compsvar]['inside']
     assert expected == result, 'Expected computations {} to indicate inside was {}, but found it as {}'.format(compsvar, expected, result)
+
+@then(u'{compsvar:w}.over_point.z < -EPSILON/2')
+def step_impl(context, compsvar):
+    print(u'STEP: Then {}.over_point.z < -EPSILON/2'.format(compsvar))
+    assert compsvar in context.result
+    expected = -EPSILON / 2
+    result = context.result[compsvar]['over_point'][2]
+    assert result < expected, 'Expected {}.over_point.z ({}) < -EPSILON / 2 ({})'.format(compsvar, result, expected)
+
+@then(u'{compsvar:w}.point.z > {comps2var:w}.over_point.z')
+def step_impl(context, compsvar, comps2var):
+    print(u'STEP: Then {}.point.z > {}.over_point.z'.format(compsvar, comps2var))
+    assert compsvar in context.result
+    assert comps2var in context.result
+    lhs = context.result[compsvar]['point'][2]
+    rhs = context.result[comps2var]['over_point'][2]
+    assert lhs > rhs, 'Expected {}.point.z ({}) > {}.over_point.z ({})'.format(compsvar, lhs, comps2var, rhs)

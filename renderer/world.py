@@ -2,6 +2,7 @@
 #
 
 from renderer.bolts import Color, IdentifyHit
+from renderer.rays import Ray
 
 class World:
     def __init__(self, objects=[], lights=[]):
@@ -23,6 +24,9 @@ class World:
     def Objects(self):
         return self.__objects
 
+    def AddObject(self, object):
+        self.__objects += [ object ]
+
     def Intersects(self, ray):
         intersections = []
         for object in self.Objects():
@@ -31,7 +35,7 @@ class World:
         return intersections
 
     def ShadeHit(self, computation):
-        return computation['object'].Material().Lighting(self.Lights()[0], computation['point'], computation['eyev'], computation['normalv'])
+        return computation['object'].Material().Lighting(self.Lights()[0], computation['over_point'], computation['eyev'], computation['normalv'], self.IsShadowed(computation['over_point']))
 
     def ColorAt(self, ray):
         intersections = self.Intersects( ray )
@@ -40,3 +44,16 @@ class World:
             return Color( 0, 0, 0 )
         else:
             return self.ShadeHit(hit['object'].PrepareComputations(ray, hit['time']))
+
+    def IsShadowed(self, point):
+        vectorTowardLight = (self.Lights()[0].Position() - point)
+        distance = vectorTowardLight.magnitude()
+        rayToLight = Ray( point, vectorTowardLight.normalize() )
+        intersections = self.Intersects( rayToLight )
+        hit = IdentifyHit( intersections )
+        if hit and hit['time'] < distance:
+            return True
+        else:
+            return False
+        
+        
