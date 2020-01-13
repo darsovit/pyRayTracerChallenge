@@ -58,10 +58,12 @@ def step_impl(context, rayvar, x, y, z):
     assert expected == result, 'Expected origin of {} to be {}, found it is {}'.format(rayvar, expected, result)
 
 
-@then(u'{rayvar:w}.direction = vector({x:g}, {y:g}, {z:g})')
+@then(u'{rayvar:w}.direction = vector({x:S}, {y:S}, {z:S})')
 def step_impl(context, rayvar, x, y, z):
     print(u'STEP: Then {}.direction = vector({}, {}, {})'.format(rayvar, x, y, z))
     assert rayvar in context.result
-    expected = Vector(x, y, z)
+    determineNumeric = context.helpers['determineNumeric']
+    expected = Vector(determineNumeric(x), determineNumeric(y), determineNumeric(z))
     result   = context.result[rayvar].Direction()
-    assert expected == result, 'Expected direction of {} to be {}, found it is {}'.format(rayvar, expected, result)
+    assert expected.compare(result), 'Expected direction of {} to be {}, found it is {}'.format(rayvar, expected, result)
+

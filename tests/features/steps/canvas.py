@@ -49,12 +49,22 @@ def step_impl(context, canvasvar, x, y, varcolor):
     pass
 
 
-@then(u'pixel_at({canvasvar:w}, {x:d}, {y:d}) = {varcolor}')
+@then(u'pixel_at({canvasvar:w}, {x:d}, {y:d}) = {varcolor:w}')
 def step_impl(context,canvasvar,x,y,varcolor):
     print(u'STEP: Then pixel_at({}, {}, {}) = {}'.format(canvasvar, x, y, varcolor))
     assert canvasvar in context.result, 'Expected to find canvas {} in context'.format(canvasvar)
     assert varcolor in context.result, 'Expected to find color {} in context'.format(varcolor)
-    assert context.result[canvasvar].Pixel(int(x),int(y)) == context.result[varcolor], 'Expected to find color {} ({}) at Canvas {} ({}, {}) but got {}'.format( varcolor, context.result[varcolor], canvasvar, x, y, context.result[canvasvar].Pixel(x,y) )
+    expected = context.result[varcolor]
+    result   = context.result[canvasvar].Pixel(x, y)
+    assert expected.compare(result), 'Expected to find Color {} ({}) at Canvas {} ({}, {}) but got {}'.format( varcolor, expected, canvasvar, x, y, result )
+
+@then(u'pixel_at({imagevar:w}, {x:d}, {y:d}) = color({r:g}, {g:g}, {b:g})')
+def step_impl(context, imagevar, x, y, r, g, b):
+    print(u'STEP: Then pixel_at({}, {}, {}) = color({}, {}, {})'.format(imagevar, x, y, r, g, b))
+    assert imagevar in context.result, 'Expected to find Canvas {} in context'.format(imagevar)
+    expected = Color( r, g, b )
+    result   = context.result[imagevar].Pixel(x, y)
+    assert expected.compare(result), 'Expected to find Color {} at Canvas {} ({}, {}), result was {}'.format(expected, imagevar, x, y, result)
 
 
 @when(u'{ppmvar:w} ← canvas_to_ppm({canvasvar:w})')
