@@ -6,18 +6,14 @@ from renderer.matrix import IdentityMatrix
 from math import sqrt
 from renderer.bolts import Point, Vector, EPSILON
 from renderer.material import Material
+from renderer.shape import Shape
 
-class Sphere:
-    
-    def __init__(self, transform=IdentityMatrix, material=Material()):
-        self.SetTransform(transform)
-        self.__material  = material
+class Sphere(Shape):
 
-    def Intersect(self, ray):
-        transformedRay = ray.Transform( self.Transform().Inverse() )
-        sphereToRay = transformedRay.Origin() - Point(0,0,0)
-        a = transformedRay.Direction().dot( transformedRay.Direction() )
-        b = 2 * transformedRay.Direction().dot( sphereToRay )
+    def LocalIntersect(self, localRay):
+        sphereToRay = localRay.Origin() - Point(0,0,0)
+        a = localRay.Direction().dot( localRay.Direction() )
+        b = 2 * localRay.Direction().dot( sphereToRay )
         c = sphereToRay.dot( sphereToRay ) - 1
         discriminant = b * b - 4 * a * c
         if discriminant < 0:
@@ -26,24 +22,10 @@ class Sphere:
         t2 = ( -b + sqrt(discriminant) ) / (2 * a)
         return [{'time':t1, 'object':self}, {'time':t2, 'object':self}]
 
-    def Transform(self):
-        return self.__transform
-    def TransformInverse(self):
-        return self.__transformInverse
-    def TransformInverseTranspose(self):
-        return self.__transformInverseTranspose
 
-    def SetTransform(self, transform):
-        self.__transform = transform
-        self.__transformInverse = transform.Inverse()
-        self.__transformInverseTranspose = self.__transformInverse.Transpose()
-
-    def Normal(self, position):
-        object_point = self.TransformInverse().TimesTuple(position)
-        object_normal = object_point - Point(0,0,0)
-        world_normal  = self.TransformInverseTranspose().TimesTuple(object_normal)
-        world_normal  = Vector( world_normal[0], world_normal[1], world_normal[2] )
-        return world_normal.normalize()
+    def LocalNormal(self, objectPoint):
+        objectNormal = objectPoint - Point(0,0,0)
+        return Vector(objectNormal[0], objectNormal[1], objectNormal[2])
 
     def PrepareComputations(self, ray, time):
         computations = {}
@@ -57,12 +39,6 @@ class Sphere:
             computations['normalv'] = -computations['normalv']
         computations['over_point'] = computations['point'] + computations['normalv'] * EPSILON
         return computations
-
-    def Material(self):
-        return self.__material
-
-    def SetMaterial(self, material):
-        self.__material = material
 
     def __str__(self):
         return ' '.join(list(map(str, ['Sphere:{', 'Material:', self.Material(), 'Transform:', self.Transform(), '}'])))

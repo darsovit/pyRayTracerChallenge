@@ -34,15 +34,6 @@ def step_impl(context, intersectionsvar, expected):
     assert expected == result, 'Expected {} intersections in {}, found {}'.format(expected, intersectionsvar, result)
 
 
-@then(u'{objectvar:w}.transform = {expectedvar:w}')
-def step_impl(context, objectvar, expectedvar):
-    print(u'STEP: Then s.transform = identity_matrix'.format(objectvar, expectedvar))
-    assert objectvar   in context.result
-    assert expectedvar in context.result
-    expected = context.result[expectedvar]
-    result   = context.result[objectvar].Transform()
-    assert expected == result, 'Expected object {} transform matrix to be {}, found {}'.format(objectvar, expected, result)
-
 @when(u'set_transform({objectvar:w}, {transformvar:w})')
 def step_impl(context, objectvar, transformvar):
     print(u'STEP: When set_transform({}, {})'.format(objectvar, transformvar))
