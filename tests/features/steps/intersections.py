@@ -151,3 +151,10 @@ def step_impl(context, compsvar, comps2var):
     lhs = context.result[compsvar]['point'][2]
     rhs = context.result[comps2var]['over_point'][2]
     assert lhs > rhs, 'Expected {}.point.z ({}) > {}.over_point.z ({})'.format(compsvar, lhs, comps2var, rhs)
+
+@then(u'{intersectionsvar:w} is empty')
+def step_impl(context, intersectionsvar):
+    print(u'STEP: Then {} is empty'.format(intersectionsvar))
+    assert intersectionsvar in context.result
+    result = len( context.result[intersectionsvar] )
+    assert result == 0, 'Expected {} is empty, but it has {} elements'.format(intersectionsvar, result)

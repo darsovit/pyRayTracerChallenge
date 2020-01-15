@@ -6,6 +6,7 @@ from behave import given, then, when
 from renderer.transformations import Translation
 from renderer.shape import Shape
 from renderer.bolts import Point, Vector
+from renderer.plane import Plane
 
 class TestShape(Shape):
 
@@ -56,3 +57,21 @@ def step_impl(context, shapevar, x, y, z):
     expected = Vector( x, y, z )
     result = context.result[shapevar].SavedRay().Direction()
     assert expected.compare(result), 'Expected {} saved ray direction = {}, but instead it is {}'.format(shapevar, expected, result)
+
+@when(u'{normalvar:w} ← local_normal_at({objectvar:w}, point({x:g}, {y:g}, {z:g}))')
+def step_impl(context, normalvar, objectvar, x, y, z):
+    print(u'STEP: When {} ← local_normal_at({}, point({}, {}, {}))'.format(normalvar, objectvar, x, y, z))
+    assert objectvar in context.result
+    context.result[normalvar] = context.result[objectvar].LocalNormal( Point(x, y, z) )
+
+@when(u'{intersectionsvar:w} ← local_intersect({objectvar:w}, {rayvar:w})')
+def step_impl(context, intersectionsvar, objectvar, rayvar):
+    print(u'STEP: When {} ← local_intersect({}, {})'.format(intersectionsvar, objectvar, rayvar))
+    assert objectvar in context.result
+    assert rayvar in context.result
+    context.result[intersectionsvar] = context.result[objectvar].LocalIntersect( context.result[rayvar] )
+
+@given(u'{planevar:w} ← plane()')
+def step_impl(context, planevar):
+    print(u'STEP: Given {} ← plane()'.format(planevar))
+    context.result[planevar] = Plane()
