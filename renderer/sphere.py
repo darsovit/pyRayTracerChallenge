@@ -4,7 +4,7 @@
 
 from renderer.matrix import IdentityMatrix
 from math import sqrt
-from renderer.bolts import Point, Vector, EPSILON
+from renderer.bolts import Point, Vector
 from renderer.material import Material
 from renderer.shape import Shape
 
@@ -27,18 +27,6 @@ class Sphere(Shape):
         objectNormal = objectPoint - Point(0,0,0)
         return Vector(objectNormal[0], objectNormal[1], objectNormal[2])
 
-    def PrepareComputations(self, ray, time):
-        computations = {}
-        computations['time'] = time
-        computations['object'] = self
-        computations['point']  = ray.Position(time)
-        computations['eyev']   = -ray.Direction().normalize()
-        computations['normalv'] = self.Normal( computations['point'] )
-        computations['inside'] = 0 > computations['normalv'].dot(computations['eyev'])
-        if computations['inside']:
-            computations['normalv'] = -computations['normalv']
-        computations['over_point'] = computations['point'] + computations['normalv'] * EPSILON
-        return computations
 
     def __str__(self):
         return ' '.join(list(map(str, ['Sphere:{', 'Material:', self.Material(), 'Transform:', self.Transform(), '}'])))

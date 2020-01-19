@@ -35,7 +35,7 @@ class World:
         return intersections
 
     def ShadeHit(self, computation):
-        return computation['object'].Material().Lighting(self.Lights()[0], computation['over_point'], computation['eyev'], computation['normalv'], self.IsShadowed(computation['over_point']))
+        return computation['object'].Material().Lighting(self.Lights()[0], computation['over_point'], computation['eyev'], computation['normalv'], self.IsShadowed(computation['over_point']), computation['object'].TransformInverse())
 
     def ColorAt(self, ray):
         intersections = self.Intersects( ray )

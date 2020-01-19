@@ -4,7 +4,7 @@
 
 from behave import given, then, when
 from renderer.material import Material
-from renderer.bolts import Color
+from renderer.bolts import Color, Point
 
 from math import isclose
 
@@ -64,6 +64,20 @@ def step_impl(context, materialvar, ambientval):
     assert materialvar in context.result
     context.result[materialvar].SetAmbient(ambientval)
 
+@given(u'{materialvar:w}.diffuse ← {val:g}')
+def step_impl(context, materialvar, val):
+    print(u'STEP: Given {}.diffuse ← {}'.format(materialvar, val))
+    assert materialvar in context.result
+    context.result[materialvar].SetDiffuse( val )
+
+
+@given(u'{materialvar:w}.specular ← {val:g}')
+def step_impl(context, materialvar, val):
+    print(u'STEP: Given {}.specular ← {}'.format(materialvar, val))
+    assert materialvar in context.result
+    context.result[materialvar].SetSpecular( val )
+
+
 @when(u'{resultvar:w} ← lighting({materialvar:w}, {lightvar:w}, {positionvar:w}, {eyevar:w}, {normalvar:w})')
 def step_impl(context, resultvar, materialvar, lightvar, positionvar, eyevar, normalvar):
     print(u'STEP: When {} ← lighting({}, {}, {}, {}, {})'.format(resultvar, materialvar, lightvar, positionvar, eyevar, normalvar))
@@ -84,3 +98,15 @@ def step_impl(context, resultvar, materialvar, lightvar, positionvar, eyevar, no
     assert normalvar in context.result
     assert shadowvar in context.result
     context.result[resultvar] = context.result[materialvar].Lighting( context.result[lightvar], context.result[positionvar], context.result[eyevar], context.result[normalvar], context.result[shadowvar] )
+
+@when(u'{colorvar:w} ← lighting({materialvar:w}, {lightvar:w}, point({x:g}, {y:g}, {z:g}), {eyevar:w}, {normalvar:w}, false)')
+def step_impl(context, colorvar, materialvar, lightvar, x, y, z, eyevar, normalvar):
+    shadowval = False
+    print(u'STEP: When {} ← lighting({}, {}, point({}, {}, {}), {}, {}, {})'.format(colorvar, materialvar, lightvar, x, y, z, eyevar, normalvar, shadowval))
+    assert materialvar in context.result
+    assert lightvar in context.result
+    assert eyevar in context.result
+    assert normalvar in context.result
+    point = Point(x, y, z)
+    context.result[colorvar] = context.result[materialvar].Lighting(context.result[lightvar], point, context.result[eyevar], context.result[normalvar], shadowval)
+    

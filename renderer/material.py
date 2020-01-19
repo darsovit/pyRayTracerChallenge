@@ -1,5 +1,6 @@
 #! python
 from renderer.bolts import Color
+from renderer.matrix import IdentityMatrix
 
 from math import isclose
 
@@ -18,12 +19,16 @@ class Material:
         self.__diffuse = diffuse
         self.__specular = specular
         self.__shininess = shininess
+        self.__pattern = None
 
     def DefaultProperties():
         return DefaultProperties
 
-    def Color(self):
-        return self.__color
+    def Color(self, position=None, objectTransform=IdentityMatrix):
+        if self.__pattern:
+            return self.__pattern.ColorAt(position, objectTransform)
+        else:
+            return self.__color
 
     def Ambient(self):
         return self.__ambient
@@ -31,14 +36,23 @@ class Material:
     def Diffuse(self):
         return self.__diffuse
 
+    def SetDiffuse(self, val):
+        self.__diffuse = val
+
     def Specular(self):
         return self.__specular
+
+    def SetSpecular(self, val):
+        self.__specular = val
 
     def Shininess(self):
         return self.__shininess
 
     def SetAmbient(self, ambient):
         self.__ambient = ambient
+
+    def SetPattern(self, pattern):
+        self.__pattern = pattern
 
     def __eq__(self, rhs):
         return ( self.Color() == rhs.Color()
@@ -54,8 +68,8 @@ class Material:
             , 'Specular:', self.Specular()
             , 'Shininess:', self.Shininess() ])))
 
-    def Lighting(self, light, position, eyev, normalv, inShadow):
-        effectiveColor = self.Color().multiply( light.Intensity() )
+    def Lighting(self, light, position, eyev, normalv, inShadow, objectTransform=IdentityMatrix):
+        effectiveColor = self.Color(position, objectTransform).multiply( light.Intensity() )
         ambientColor = effectiveColor * self.Ambient()
         if inShadow:
             return Color( ambientColor[0], ambientColor[1], ambientColor[2] )

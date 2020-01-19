@@ -33,7 +33,6 @@ def step_impl(context, intersectionsvar, expected):
     result = len(context.result[intersectionsvar])
     assert expected == result, 'Expected {} intersections in {}, found {}'.format(expected, intersectionsvar, result)
 
-
 @when(u'set_transform({objectvar:w}, {transformvar:w})')
 def step_impl(context, objectvar, transformvar):
     print(u'STEP: When set_transform({}, {})'.format(objectvar, transformvar))
@@ -42,6 +41,7 @@ def step_impl(context, objectvar, transformvar):
     context.result[objectvar].SetTransform( context.result[transformvar] )
 
 
+@given(u'set_transform({objectvar:w}, scaling({x:g}, {y:g}, {z:g}))')
 @when(u'set_transform({objectvar:w}, scaling({x:g}, {y:g}, {z:g}))')
 def step_impl(context, objectvar, x, y, z):
     print(u'STEP: When set_transform({}, scaling({}, {}, {}))'.format(objectvar, x, y, z))
