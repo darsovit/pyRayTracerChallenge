@@ -4,7 +4,7 @@ from renderer.matrix import IdentityMatrix
 
 from math import isclose
 
-DefaultProperties = {'color':Color(1,1,1), 'ambient':0.1, 'diffuse':0.9, 'specular':0.9, 'shininess':200.0}
+DefaultProperties = {'color':Color(1,1,1), 'ambient':0.1, 'diffuse':0.9, 'specular':0.9, 'shininess':200.0, 'reflective': 0.0}
 
 class Material:
     defaultColor = Color(1,1,1)
@@ -13,13 +13,16 @@ class Material:
                  ambient=DefaultProperties['ambient'],
                  diffuse=DefaultProperties['diffuse'],
                  specular=DefaultProperties['specular'],
-                 shininess=DefaultProperties['shininess']):
+                 shininess=DefaultProperties['shininess'],
+                 reflectivity=DefaultProperties['reflective'],
+                 pattern=None):
         self.__color = color
         self.__ambient = ambient
         self.__diffuse = diffuse
         self.__specular = specular
         self.__shininess = shininess
-        self.__pattern = None
+        self.__reflectivity = reflectivity
+        self.__pattern = pattern
 
     def DefaultProperties():
         return DefaultProperties
@@ -53,6 +56,9 @@ class Material:
 
     def SetPattern(self, pattern):
         self.__pattern = pattern
+
+    def Reflectivity(self):
+        return self.__reflectivity
 
     def __eq__(self, rhs):
         return ( self.Color() == rhs.Color()

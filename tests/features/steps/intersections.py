@@ -2,17 +2,19 @@
 #
 #
 from behave import given,then,when
-from renderer.bolts import IdentifyHit, EPSILON
+from renderer.bolts import IdentifyHit, EPSILON, Vector
 
-@when(u'{intersectionvar:w} ← intersection({time:g}, {objectvar:w})')
+@given(u'{intersectionvar:w} ← intersection({time:S}, {objectvar:w})')
+@when(u'{intersectionvar:w} ← intersection({time:S}, {objectvar:w})')
 def step_impl(context, intersectionvar, time, objectvar):
-    print(u'STEP: When i ← intersection(3.5, s)'.format(intersectionvar, time, objectvar))
+    print(u'STEP: When {} ← intersection({}, {})'.format(intersectionvar, time, objectvar))
     assert objectvar in context.result
-    context.result[intersectionvar] = {'time': time, 'object': context.result[objectvar]}
+    determineNumeric = context.helpers['determineNumeric']
+    context.result[intersectionvar] = {'time': determineNumeric(time), 'object': context.result[objectvar]}
 
 @then(u'{intersectionvar:w}.t = {expectedtime:g}')
 def step_impl(context, intersectionvar, expectedtime):
-    print(u'STEP: Then i.t = 3.5'.format(intersectionvar, expectedtime))
+    print(u'STEP: Then {}.t = {}'.format(intersectionvar, expectedtime))
     assert intersectionvar in context.result
     result = context.result[intersectionvar]['time']
     assert expectedtime == result, 'Expected intersection {} time to be {}, found it was {}'.format(intersectionvar, expectedtime, result)
@@ -151,6 +153,15 @@ def step_impl(context, compsvar, comps2var):
     lhs = context.result[compsvar]['point'][2]
     rhs = context.result[comps2var]['over_point'][2]
     assert lhs > rhs, 'Expected {}.point.z ({}) > {}.over_point.z ({})'.format(compsvar, lhs, comps2var, rhs)
+
+@then(u'{compsvar:w}.reflectv = vector({x:S}, {y:S}, {z:S})')
+def step_impl(context, compsvar, x, y, z):
+    print(u'STEP: Then {}.reflectv = vector({}, {}, {})'.format(compsvar, x, y, z))
+    assert compsvar in context.result
+    determineNumeric = context.helpers['determineNumeric']
+    expected = Vector( determineNumeric(x), determineNumeric(y), determineNumeric(z) )
+    result   = context.result[compsvar]['reflectv']
+    assert expected.compare(result), 'Expected {}.reflectv to equal Vector({}, {}, {}) = {}, but it is {}'.format(compsvar, x, y, z, expected, result)
 
 @then(u'{intersectionsvar:w} is empty')
 def step_impl(context, intersectionsvar):

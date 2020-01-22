@@ -51,6 +51,13 @@ def step_impl(context, materialvar, expected):
     result = context.result[materialvar].Shininess()
     assert isclose(expected, result), 'Expected shininess value of material {} to be {}, found it is {}'.format(materialvar, expected, result)
 
+@then(u'{materialvar:w}.reflective = {expected:g}')
+def step_impl(context, materialvar, expected):
+    print(u'STEP: Then {}.reflective = {}'.format(materialvar, expected))
+    assert materialvar in context.result
+    result = context.result[materialvar].Reflectivity()
+    assert isclose(expected, result), 'Expected Reflectivity value of material {} to be {}, found it is {}'.format(materialvar, expected, result)
+
 @then(u'{var:w} = material()')
 def step_impl(context, var):
     print(u'STEP: Then {} = material()'.format(var))

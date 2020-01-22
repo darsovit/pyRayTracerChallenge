@@ -28,10 +28,11 @@ def step_impl(context, rayvar, directionvar):
     assert directionvar in context.result
     assert context.result[rayvar].Direction() == context.result[directionvar]
 
-@given(u'{rayvar:w} ← ray(point({pointx:g}, {pointy:g}, {pointz:g}), vector({vecx:g}, {vecy:g}, {vecz:g}))')
+@given(u'{rayvar:w} ← ray(point({pointx:g}, {pointy:g}, {pointz:g}), vector({vecx:S}, {vecy:S}, {vecz:S}))')
 def step_impl(context, rayvar, pointx, pointy, pointz, vecx, vecy, vecz):
-    print(u'STEP: Given r ← ray(point(2, 3, 4), vector(1, 0, 0))'.format(rayvar, pointx, pointy, pointz, vecx, vecy, vecz))
-    context.result[rayvar] = Ray(Point(pointx, pointy, pointz), Vector(vecx, vecy, vecz))
+    print(u'STEP: Given {} ← ray(point({}, {}, {}), vector({}, {}, {}))'.format(rayvar, pointx, pointy, pointz, vecx, vecy, vecz))
+    determineNumeric = context.helpers['determineNumeric']
+    context.result[rayvar] = Ray(Point(pointx, pointy, pointz), Vector(determineNumeric(vecx), determineNumeric(vecy), determineNumeric(vecz)))
 
 @then(u'position({rayvar:w}, {time:g}) = point({pointx:g}, {pointy:g}, {pointz:g})')
 def step_impl(context, rayvar, time, pointx, pointy, pointz):

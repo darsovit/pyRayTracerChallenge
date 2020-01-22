@@ -50,6 +50,13 @@ Scenario: Computing the normal on a transformed shape
     And n ← normal_at(s, point(0, √2/2, -√2/2))
   Then n = vector(0, 0.97014, -0.24254)
 
+Scenario: Building a plane from property table
+  Given shape ← plane() with:                 
+      | material.reflective | 0.5                   |
+      | transform           | translation(0, -1, 0) |   
+  Then shape.material.reflective = 0.5
+   And shape.transform = translation(0, -1, 0)
+
 #Scenario: A shape has a parent attribute
 #  Given s ← test_shape()
 #  Then s.parent is nothing

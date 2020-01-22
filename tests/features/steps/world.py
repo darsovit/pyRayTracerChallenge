@@ -125,3 +125,24 @@ def step_impl(context, objectvar, worldvar):
     assert objectvar in context.result
     assert worldvar in context.result
     context.result[worldvar].AddObject( context.result[objectvar] )
+
+@when(u'{colorvar:w} ← reflected_color({worldvar:w}, {compsvar:w})')
+def step_impl(context, colorvar, worldvar, compsvar):
+    print(u'STEP: When {} ← reflected_color({}, {})'.format(colorvar, worldvar, compsvar))
+    assert worldvar in context.result
+    assert compsvar in context.result
+    context.result[colorvar] = context.result[worldvar].ReflectedColorAt( context.result[compsvar], 1 )
+
+@then(u'color_at({worldvar:w}, {rayvar:w}) should terminate successfully')
+def step_impl(context, worldvar, rayvar):
+    print(u'STEP: Then color_at({}, {}) should terminate successfully'.format(worldvar, rayvar))
+    assert worldvar in context.result
+    assert rayvar in context.result
+    context.result[worldvar].ColorAt( context.result[rayvar] )
+
+@when(u'{colorvar:w} ← reflected_color({worldvar:w}, {compsvar:w}, {remaining:d})')
+def step_impl(context, colorvar, worldvar, compsvar, remaining):
+    print(u'STEP: When {} ← reflected_color({}, {}, {})'.format(colorvar, worldvar, compsvar, remaining))
+    assert worldvar in context.result
+    assert compsvar in context.result
+    context.result[colorvar] = context.result[worldvar].ReflectedColorAt( context.result[compsvar], remaining )

@@ -4,6 +4,7 @@
 from renderer.material import Material
 from renderer.transformations import IdentityMatrix
 from renderer.bolts import Vector, EPSILON
+from renderer.rays import Ray
 
 class Shape:
     def __init__(self, transform=IdentityMatrix, material=Material()):
@@ -50,4 +51,5 @@ class Shape:
         if computations['inside']:
             computations['normalv'] = -computations['normalv']
         computations['over_point'] = computations['point'] + computations['normalv'] * EPSILON
+        computations['reflectv'] = ray.Direction().reflect( computations['normalv'] )
         return computations
