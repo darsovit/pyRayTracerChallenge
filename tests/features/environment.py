@@ -5,6 +5,12 @@
 import behave
 from renderer.matrix import IdentityMatrix
 from math import pi, sqrt
+from renderer.pattern import Pattern
+from renderer.bolts import Color
+
+class TestPattern(Pattern):
+    def LocalColorAt(self, point):
+        return Color( point[0], point[1], point[2] )
 
 def determineValue(stringval):
     if stringval == 'π':
@@ -39,3 +45,4 @@ def before_all(context):
     assert 'helpers' not in context
     context.helpers = {}
     context.helpers['determineNumeric'] = determineNumeric
+    context.helpers['test_pattern'] = lambda : TestPattern()

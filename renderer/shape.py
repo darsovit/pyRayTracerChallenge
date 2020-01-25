@@ -40,7 +40,7 @@ class Shape:
         worldNormal = Vector( tempWorldNormal[0], tempWorldNormal[1], tempWorldNormal[2] )
         return worldNormal.normalize()
 
-    def PrepareComputations(self, ray, time):
+    def PrepareComputations(self, ray, time, intersections=[]):
         computations = {}
         computations['time'] = time
         computations['object'] = self
@@ -50,6 +50,24 @@ class Shape:
         computations['inside'] = 0 > computations['normalv'].dot(computations['eyev'])
         if computations['inside']:
             computations['normalv'] = -computations['normalv']
-        computations['over_point'] = computations['point'] + computations['normalv'] * EPSILON
+        computations['over_point'] = computations['point'] + ( computations['normalv'] * EPSILON )
+        computations['under_point'] = computations['point'] - ( computations['normalv'] * EPSILON )
         computations['reflectv'] = ray.Direction().reflect( computations['normalv'] )
+        containers = []
+        
+        for intersection in intersections:
+            if time == intersection['time']:
+                if len(containers) == 0:
+                    computations['n1'] = 1.0
+                else:
+                    computations['n1'] = containers[-1].Material().RefractiveIndex()
+            if intersection['object'] in containers:
+                containers.remove(intersection['object'])
+            else:
+                containers.append( intersection['object'] )
+            if time == intersection['time']:
+                if len(containers) == 0:
+                    computations['n2'] = 1.0
+                else:
+                    computations['n2'] = containers[-1].Material().RefractiveIndex()
         return computations

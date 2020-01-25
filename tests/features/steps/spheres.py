@@ -3,7 +3,7 @@
 #
 
 from behave import given, then
-from renderer.sphere import Sphere
+from renderer.sphere import Sphere, GlassSphere
 from renderer.matrix import IdentityMatrix
 from renderer.transformations import Scaling, Translation, Rotation_z
 from renderer.material import Material
@@ -107,3 +107,7 @@ def step_impl(context, spherevar, materialvar):
     result = context.result[spherevar].Material()
     assert context.result[materialvar] == result, 'Expected Object {} material to be equal to {}, found it is {}'.format(spherevar, context.result[materialvar], result)
 
+@given(u'{spherevar:w} ← glass_sphere()')
+def step_impl(context, spherevar):
+    print(u'STEP: Given {} ← glass_sphere()'.format(spherevar))
+    context.result[spherevar] = GlassSphere()

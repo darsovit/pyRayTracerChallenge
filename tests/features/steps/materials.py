@@ -116,4 +116,19 @@ def step_impl(context, colorvar, materialvar, lightvar, x, y, z, eyevar, normalv
     assert normalvar in context.result
     point = Point(x, y, z)
     context.result[colorvar] = context.result[materialvar].Lighting(context.result[lightvar], point, context.result[eyevar], context.result[normalvar], shadowval)
-    
+
+
+@then(u'{materialvar:w}.transparency = {expected:g}')
+def step_impl(context, materialvar, expected):
+    print(u'STEP: Then {}.transparency = {}'.format(materialvar, expected))
+    assert materialvar in context.result
+    result = context.result[materialvar].Transparency()
+    assert expected == result, 'Expected Material {} transparency to be {}, found it is {}'.format( materialvar, expected, result )
+
+
+@then(u'{materialvar:w}.refractive_index = {expected:g}')
+def step_impl(context, materialvar, expected):
+    print(u'STEP: Then {}.refractive_index = {}'.format(materialvar, expected))
+    assert materialvar in context.result
+    result = context.result[materialvar].RefractiveIndex()
+    assert expected == result, 'Expected Material {} refractive index to be {}, found it is {}'.format( materialvar, expected, result )

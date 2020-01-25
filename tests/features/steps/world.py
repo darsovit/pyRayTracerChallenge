@@ -97,6 +97,13 @@ def step_impl(context, colorvar, worldvar, compsvar):
     assert compsvar in context.result
     context.result[colorvar] = context.result[worldvar].ShadeHit( context.result[compsvar] )
 
+@when(u'{colorvar:w} ← shade_hit({worldvar:w}, {compsvar:w}, {remaining:d})')
+def step_impl(context, colorvar, worldvar, compsvar, remaining):
+    print(u'STEP: When {} ← shade_hit({}, {}, {})'.format(colorvar, worldvar, compsvar, remaining))
+    assert worldvar in context.result
+    assert compsvar in context.result
+    context.result[colorvar] = context.result[worldvar].ShadeHit( context.result[compsvar], remaining )
+
 @given(u'{worldvar:w}.light ← point_light(point({pointx:g}, {pointy:g}, {pointz:g}), color({r:g}, {g:g}, {b:g}))')
 def step_impl(context, worldvar, pointx, pointy, pointz, r, g, b):
     print(u'STEP: Given {}.light ← point_light(point({}, {}, {}), color({}, {}, {}))'.format(worldvar, pointx, pointy, pointz, r, g, b))
@@ -146,3 +153,10 @@ def step_impl(context, colorvar, worldvar, compsvar, remaining):
     assert worldvar in context.result
     assert compsvar in context.result
     context.result[colorvar] = context.result[worldvar].ReflectedColorAt( context.result[compsvar], remaining )
+
+@when(u'{colorvar:w} ← refracted_color({worldvar:w}, {compsvar:w}, {remaining:d})')
+def step_impl(context, colorvar, worldvar, compsvar, remaining):
+    print(u'STEP: When {} ← refracted_color({}, {}, {})'.format(colorvar, worldvar, compsvar, remaining))
+    assert worldvar in context.result
+    assert compsvar in context.result
+    context.result[colorvar] = context.result[worldvar].RefractedColorAt( context.result[compsvar], remaining )

@@ -3,13 +3,10 @@
 #
 
 from behave import given, then, when
-from renderer.pattern import StripePattern, Pattern, GradientPattern, RingPattern, CheckerPattern
+from renderer.pattern import StripePattern, GradientPattern, RingPattern, CheckerPattern
 from renderer.bolts import Point, Color
 from renderer.transformations import Translation, Scaling
 
-class TestPattern(Pattern):
-    def LocalColorAt(self, point):
-        return Color( point[0], point[1], point[2] )
 
 @given(u'{patternvar:w} ← stripe_pattern({color1var:w}, {color2var:w})')
 def step_impl(context, patternvar, color1var, color2var):
@@ -86,7 +83,7 @@ def step_impl(context, patternvar, x, y, z):
 @given(u'{patternvar:w} ← test_pattern()')
 def step_impl(context, patternvar):
     print(u'STEP: Given {} ← test_pattern()'.format(patternvar))
-    context.result[patternvar] = TestPattern()
+    context.result[patternvar] = context.helpers['test_pattern']()
 
 @given(u'{patternvar:w} ← gradient_pattern({color1var:w}, {color2var:w})')
 def step_impl(context, patternvar, color1var, color2var):

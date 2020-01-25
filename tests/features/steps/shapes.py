@@ -5,7 +5,7 @@
 from behave import given, then, when
 from renderer.transformations import Translation, Scaling
 from renderer.shape import Shape
-from renderer.sphere import Sphere
+from renderer.sphere import Sphere, GlassSphere
 from renderer.bolts import Point, Vector, Color
 from renderer.plane import Plane
 from renderer.material import Material
@@ -93,7 +93,7 @@ def buildMaterial( materialProps ):
             aMaterial[prop] = Color( result['r'], result['g'], result['b'] )
         else:
             aMaterial[prop] = Material.DefaultProperties()[prop]
-    return Material(color=aMaterial['color'], ambient=aMaterial['ambient'], diffuse=aMaterial['diffuse'], specular=aMaterial['specular'], shininess=aMaterial['shininess'], reflectivity=aMaterial['reflective'])
+    return Material(color=aMaterial['color'], ambient=aMaterial['ambient'], diffuse=aMaterial['diffuse'], specular=aMaterial['specular'], shininess=aMaterial['shininess'], reflectivity=aMaterial['reflective'], transparency=aMaterial['transparency'], refractiveIndex=aMaterial['refractive_index'])
 
 def buildTransforms( transforms ):
     transformParse = compile('{transform:w}({x:g}, {y:g}, {z:g})')
@@ -119,10 +119,10 @@ def buildShapeDetailsFromProps(props):
             transforms += [ props[sphereProp] ]
     material = buildMaterial( materialProps )
     transform = buildTransforms( transforms )
-    return ( transform, material )
+    return ( transforms, materialProps )
 
-def buildShapeDetailsFromTable(context):
-    props = {}
+def buildShapeDetailsFromTable(context, someProps={}):
+    props = someProps.copy()
     (key,value) = context.table.headings
     props[key] = value
     for row in context.table:
@@ -133,14 +133,42 @@ def buildShapeDetailsFromTable(context):
 @given(u'{spherevar} ← sphere() with')
 def step_impl(context, spherevar):
     print(u'STEP: Given {} ← sphere() with'.format(spherevar))
-    (transform,material) = buildShapeDetailsFromTable(context)
-    context.result[spherevar] = Sphere(transform, material)
+    (transforms,materialProps) = buildShapeDetailsFromTable(context)
+    context.result[spherevar] = Sphere(buildTransforms(transforms), buildMaterial(materialProps))
 
 @given(u'{shapevar:w} ← plane() with')
 def step_impl(context, shapevar):
     print(u'STEP: Given {} ← plane() with'.format(shapevar))
-    (transform,material) = buildShapeDetailsFromTable(context)
-    context.result[shapevar] = Plane(transform, material)
+    (transforms,materialProps) = buildShapeDetailsFromTable(context)
+    context.result[shapevar] = Plane(buildTransforms(transforms), buildMaterial(materialProps))
+
+@given(u'{spherevar} ← glass_sphere() with')
+def step_impl(context, spherevar):
+    print(u'STEP: Given {} ← glass_sphere() with'.format(spherevar))
+    glassProps = { 'material.transparency': 1.0, 'material.refractive_index': 1.5 }
+    (transforms, materialProps) = buildShapeDetailsFromTable(context, glassProps)
+    context.result[spherevar] = Sphere(buildTransforms(transforms), buildMaterial(materialProps))
+
+def updateMaterial(context, shapevar, propName, propValue):
+    material = context.result[shapevar].Material()
+    if propName == 'transparency':
+        material.SetTransparency( float(propValue) )
+    elif propName == 'refractive_index':
+        material.SetRefractiveIndex( float(propValue) )
+    elif propName == 'ambient':
+        material.SetAmbient( float(propValue) )
+    elif propName == 'pattern' and propValue == 'test_pattern()':
+        material.SetPattern( context.helpers['test_pattern']() )
+    else:
+        assert False, 'Material Property "{}" is not setup yet'.format(propName)
+
+
+@given(u'{shapevar:w} has')
+def step_impl(context, shapevar):
+    print(u'STEP: Given {} has'.format(shapevar))
+    (transforms, materialProps) = buildShapeDetailsFromTable(context)
+    for materialProp in materialProps:
+        updateMaterial(context, shapevar, materialProp, materialProps[materialProp])
 
 
 @given(u'{objectvar:w}.material.ambient ← {ambientval:g}')
@@ -149,7 +177,7 @@ def step_impl(context, objectvar, ambientval):
     assert objectvar in context.result
     context.result[objectvar].Material().SetAmbient(ambientval)
 
-@then(u'{colorvar} = {objectvar}.material.color')
+@then(u'{colorvar:w} = {objectvar:w}.material.color')
 def step_impl(context, colorvar, objectvar):
     print(u'STEP: Then {} = {}.material.color'.format(colorvar, objectvar))
     assert objectvar in context.result
@@ -157,9 +185,24 @@ def step_impl(context, colorvar, objectvar):
     result   = context.result[colorvar]
     assert expected.compare(result), 'Expected color {} to equal object {} material color {}, but it is instead {}'.format(colorvar, objectvar, expected, result)
 
-@then(u'{objectvar}.material.reflective = {expected:g}')
+@then(u'{objectvar:w}.material.reflective = {expected:g}')
 def step_impl(context, objectvar, expected):
     print(u'STEP: Then {}.material.reflective = {}'.format(objectvar, expected))
     assert objectvar in context.result
     result = context.result[objectvar].Material().Reflectivity()
     assert isclose(expected, result), 'Expected {} material reflectivity to be {}, found it as {}'.format(objectvar, expected, result)
+
+@then(u'{objectvar:w}.material.transparency = {expected:g}')
+def step_impl(context, objectvar, expected):
+    print(u'STEP: Then {}.material.transparency = {}'.format(objectvar, expected))
+    assert objectvar in context.result
+    result = context.result[objectvar].Material().Transparency()
+    assert isclose(expected, result), 'Expected {} material transparency to be {}, find it is {}'.format(objectvar, expected, result)
+
+
+@then(u'{objectvar:w}.material.refractive_index = {expected:g}')
+def step_impl(context, objectvar, expected):
+    print(u'STEP: Then {}.material.refractive_index = {}'.format(objectvar, expected))
+    assert objectvar in context.result
+    result = context.result[objectvar].Material().RefractiveIndex()
+    assert isclose(expected, result), 'Expected {} material refractive index to be {}, find it is {}'.format(objectvar, expected, result)

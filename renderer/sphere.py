@@ -32,4 +32,8 @@ class Sphere(Shape):
         return ' '.join(list(map(str, ['Sphere:{', 'Material:', self.Material(), 'Transform:', self.Transform(), '}'])))
 
     def __eq__(self, rhs):
-        return self.Material() == rhs.Material() and self.Transform() == rhs.Transform()
+        equality = self.Material() == rhs.Material() and self.Transform() == rhs.Transform()
+        return equality
+
+def GlassSphere():
+    return Sphere(material=Material(transparency=1.0, refractiveIndex=1.5))
