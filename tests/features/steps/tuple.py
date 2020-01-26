@@ -339,3 +339,11 @@ def step_impl(context, var, denom):
 def step_impl(context, var):
     print(u'STEP: Given {} ← true'.format(var))
     context.result[var] = True
+
+@then(u'{var:w} = {expected:g}')
+def step_impl(context, var, expected):
+    print(u'STEP: Then {} = {}'.format(var, expected))
+    assert var in context.result
+    result = context.result[var]
+    assert isclose(expected, result, abs_tol=EPSILON), 'Expected variable {} to be {}, found it is {}'.format(var, expected, result)
+    

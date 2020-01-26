@@ -5,6 +5,7 @@ from renderer.material import Material
 from renderer.transformations import IdentityMatrix
 from renderer.bolts import Vector, EPSILON
 from renderer.rays import Ray
+from math import sqrt
 
 class Shape:
     def __init__(self, transform=IdentityMatrix, material=Material()):
@@ -70,4 +71,20 @@ class Shape:
                     computations['n2'] = 1.0
                 else:
                     computations['n2'] = containers[-1].Material().RefractiveIndex()
+
+        if self.Material().Transparency() > 0:
+            cos = computations['eyev'].dot( computations['normalv'] )
+            computations['cosI'] = cos
+            if computations['n1'] > computations['n2']:
+                nRatio = computations['n1'] / computations['n2']
+                computations['nRatio'] = nRatio
+                computations['sin2_t'] = (nRatio*nRatio) * (1.0 - (cos * cos) )
+                if computations['sin2_t'] > 1.0:
+                    computations['reflectance'] = 1.0
+                else:
+                    cos_t = sqrt(1.0 - computations['sin2_t'])
+                    cos = cos_t
+            if 'reflectance' not in computations:
+                r0 = pow((computations['n1'] - computations['n2']) / (computations['n1'] + computations['n2']), 2)
+                computations['reflectance'] = r0 + (1 - r0) * pow((1-cos),5)
         return computations

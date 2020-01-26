@@ -265,4 +265,11 @@ def step_impl(context, xsvar, time1, obj1, time2, obj2, time3, obj3, time4, obj4
     intersections += [ {'object': context.result[obj3], 'time': time3} ]
     intersections += [ {'object': context.result[obj4], 'time': time4} ]
     context.result[xsvar] = intersections
-    
+
+@when(u'{varname:w} ← schlick({compsvar:w})')
+def step_impl(context, varname, compsvar):
+    print(u'STEP: When {} ← schlick({})'.format(varname, compsvar))
+    assert compsvar in context.result
+    assert 'reflectance' in context.result[compsvar]
+    context.result[varname] = context.result[compsvar]['reflectance']
+
